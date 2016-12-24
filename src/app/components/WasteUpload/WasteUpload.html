@@ -1,0 +1,34 @@
+<div class="flex flex-column space around top-room">
+	<div class="row center-xs">
+		<h4>Here is where you will upload your Waste Records</h4>
+	</div>	
+
+	<div class="row center-xs animate" ng-hide="waste.excelReady">
+		<p class="leggible">
+			In order to upload your waste records. Click on 'Select Files'. Select your waste record file. Click Done. Once you have clicked done. We will begin processing your file. Please be patient as this process is a resource intensive task. It may take a couple of minutes depending on how new your computer is.
+		</p>
+	</div>
+
+	<div class="row center-xs animate" ng-show="waste.excelReady">
+		<div class="row center-xs">
+			<div class="leggible">
+				Now that we have your waste records. Please tell us which columns in your spreadsheet are associated with the data that we need to automate your waste logs. This will allow is to map your data to our data correctly.
+			</div>
+		</div>
+
+		<div class="row pin bottom top-room">
+			<div class="padded" ng-repeat="(db, name) in waste.dbColumns">
+				<label>{{ name }}</label>
+				<select ng-model="waste.columns[db]">
+					<option value="{{ fileColumn }}" ng-repeat="(index, fileColumn) in waste.fileColumns">{{ fileColumn }}</option>	
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<div class="row around-xs">
+		<button ng-click="waste.selectFiles()">Select Files</button>
+		<button class="button button-outline" ng-disabled="!waste.isReady()" ui-sref="pdf-upload">Next</button>
+	</div>
+
+</div>

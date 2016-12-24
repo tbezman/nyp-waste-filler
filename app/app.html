@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Electron Boilerplate</title>
+
+    <link href="stylesheets/main.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/milligram.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/flexboxgrid.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/animate.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+
+    <script src="helpers/context_menu.js"></script>
+    <script src="helpers/external_links.js"></script>
+
+    <script src="app.js"></script>
+</head>
+<body ng-app="app">
+    <input type="file" class="ng-hide" id="fakeInput">
+    <input type="file" multiple class="ng-hide" id="fakeInputMultiple">
+
+    <ui-view></ui-view>
+
+</body>
+</html>

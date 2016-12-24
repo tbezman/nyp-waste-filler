@@ -1,0 +1,17 @@
+<div class="flex flex-column space around top-room">
+	<div class="row center-xs">
+		<h4>Here is where you will upload your Waste Logs</h4>
+	</div>	
+
+	<div class="row center-xs animate" ng-hide="pdf.pdfsReady">
+		<p class="leggible">
+			In order to upload your waste logs. Click on 'Select Files'. Select your waste log files. Click Done. Once you have clicked done. We will begin processing your files. Please be patient as this process is a resource intensive task. It may take a couple of minutes depending on how new your computer is.
+		</p>
+	</div>
+
+	<div class="row around-xs">
+		<button ng-click="pdf.selectFiles()">Select Files</button>
+		<button class="button button-outline" ng-disabled="!pdf.pdfsReady" ui-sref="pdf-upload">Next</button>
+	</div>
+
+</div>
