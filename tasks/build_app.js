@@ -21,7 +21,7 @@ gulp.task('bundle', function () {
 });
 
 gulp.task('less', function () {
-    return gulp.src(srcDir.path('stylesheets/main.less'))
+    return gulp.src([srcDir.path('stylesheets/main.less'), srcDir.path('stylesheets/milligram.css'), srcDir.path('stylesheets/flexboxgrid.css'), srcDir.path('stylesheets/animate.css')])
         .pipe(plumber())
         .pipe(less())
         .pipe(gulp.dest(destDir.path('stylesheets')));
