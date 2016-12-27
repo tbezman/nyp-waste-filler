@@ -1,42 +1,46 @@
 import fs from 'fs';
 
 export class StorageService {
-	constructor($rootScope, $interval) {
-		this.$rootScope = $rootScope;
-		this.data = JSON.parse(fs.readFileSync(appRoot + '/files/storage.json', 'utf8'));
-		this.$interval = $interval;
+    constructor($rootScope, $interval) {
+        this.$rootScope = $rootScope;
+        this.data = JSON.parse(fs.readFileSync(appRoot + '/files/storage.json', 'utf8'));
+        this.$interval = $interval;
 
-		this.watchers = [];
+        this.watchers = [];
 
-		this.startWatching();
-	}
+        this.startWatching();
+    }
 
-	startWatching() {
-		this.$interval(() => {
-			this.watchers.forEach(watcher => {
-				console.log('Updating ' + watcher.label)
-				this.update(watcher);
-			})
+    startWatching() {
+        this.$interval(() => {
+            this.updateAll();
+        }, 2000);
+    }
 
-			this.storeData();
-		}, 2000);
-	}
+    updateAll() {
+        this.watchers.forEach(watcher => {
+            console.log('Updating ' + watcher.label)
+            this.update(watcher);
+        })
 
-	update(watcher) {
-		this.data[watcher.label] = watcher.getData();
-	}
+        this.storeData();
+    }
 
-	storeData() {
-		fs.writeFile(appRoot + '/files/storage.json', JSON.stringify(this.data), (err, data) => {
-			if(err) console.error(err);
-		});
-	}
+    update(watcher) {
+        this.data[watcher.label] = watcher.getData();
+    }
 
-	watch(obj, label, getData, putData) {
-		this.watchers.push({obj: obj, label: label, getData: getData, putData: putData});
+    storeData() {
+        fs.writeFile(appRoot + '/files/storage.json', JSON.stringify(this.data), (err, data) => {
+            if (err) console.error(err);
+        });
+    }
 
-		if(this.data[label]) {
-			putData(this.data[label]);
-		}
-	}	
+    watch(obj, label, getData, putData) {
+        this.watchers.push({obj: obj, label: label, getData: getData, putData: putData});
+
+        if (this.data[label]) {
+            putData(this.data[label]);
+        }
+    }
 }

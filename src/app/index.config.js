@@ -1,21 +1,28 @@
-import angular from 'angular';
+let angular = require('angular');
 
 angular.module('app.config', [require('angular-ui-router')])
-	.config(($stateProvider, $urlRouterProvider) => {
-		$stateProvider.state({
-			url: "/",
-			name: "home",
-			template: "<home></home>"
-		})
-		$stateProvider.state({
-			name: 'waste-upload',
-			url: '/waste-upload',
-			template: '<waste-upload></waste-upload>'
-		});
-		$stateProvider.state({
-			name: 'pdf-upload',
-			url: '/pdf-upload',
-			template: '<pdf-upload></pdf-upload>'
-		})
-		$urlRouterProvider.otherwise('/');
-	});
+    .config(($stateProvider, $urlRouterProvider) => {
+        $stateProvider.state({
+            name: 'work',
+            template: '<work-flow></work-flow>'
+        });
+        $stateProvider.state({
+            url: "/",
+            name: "home",
+            parent: 'work',
+            template: "<home></home>"
+        })
+        $stateProvider.state({
+            name: 'waste-upload',
+            url: '/waste-upload',
+            parent: 'work',
+            template: '<waste-upload></waste-upload>'
+        });
+        $stateProvider.state({
+            name: 'pdf-upload',
+            url: '/pdf-upload',
+            parent: 'work',
+            template: '<pdf-upload></pdf-upload>'
+        })
+        $urlRouterProvider.otherwise('/');
+    });
