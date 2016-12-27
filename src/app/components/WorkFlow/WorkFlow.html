@@ -1,5 +1,7 @@
-<div class="flex-column">
-	<div><span>Back Button</span></div>
+<div class="flex">
+	<div class="header">
+        <button ng-click="flow.back()" ng-show="flow.notHome()" class="button-clear">&lt Back</button>
+    </div>
 
-	<div class="flex-rest" ui-view></div>
+	<div class="content" ui-view></div>
 </div>
