@@ -69,11 +69,14 @@ class PDFFillerController {
 
         WasteLog.findAll({
             where: sequelize.and(wheres),
+            order: [
+                ['charge_code_descriptor', 'ASC', 'when', 'ASC']
+            ]
         }).then(logs => {
-            this.results = logs.map(log => log.dataValues).filter(log => {
+            this.results = logs.filter(log => {
                 if(!this.searchDate) return true;
 
-                return moment(this.searchDate).diff(moment(log.when), 'days') == 0;
+                return moment(this.searchDate).diff(moment(log.dataValues.when), 'days') == 0;
             });
         });
     }
