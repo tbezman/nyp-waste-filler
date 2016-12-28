@@ -33,5 +33,15 @@ angular.module('app.config', [require('angular-ui-router')])
             parent: 'work',
             template: '<pdf-layout></pdf-layout>'
         })
+        $stateProvider.state({
+            name: 'pdf-filler',
+            url: '/pdf-filler',
+            params: {
+                files: null,
+                layout: null
+            },
+            parent: 'work',
+            template: '<pdf-filler></pdf-filler>'
+        })
         $urlRouterProvider.otherwise('/');
     });

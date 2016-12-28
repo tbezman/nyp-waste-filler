@@ -19,9 +19,8 @@ export class StorageService {
 
     updateAll() {
         this.watchers.forEach(watcher => {
-            console.log('Updating ' + watcher.label)
             this.update(watcher);
-        })
+        });
 
         this.storeData();
     }

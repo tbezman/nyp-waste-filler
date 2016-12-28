@@ -3,10 +3,11 @@ import {
 } from '../../../back/PDFService';
 
 class PDFUploadController {
-    constructor(StorageService, $state) {
+    constructor(StorageService, $state, $scope) {
         this.pdfService = new PDFService();
 		this.pdfsReady = false;
 		this.$state = $state;
+        this.$scope = $scope;
 
         StorageService.watch(this.files, 'pdf-upload', () => {
             return {
@@ -28,6 +29,7 @@ class PDFUploadController {
     onFileLoad(event) {
         let result = event.target.result;
         this.pdfService.addFile(result);
+        this.$scope.$apply();
     }
 
     selectFiles() {

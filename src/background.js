@@ -9,10 +9,6 @@ import {app, Menu} from 'electron';
 import {devMenuTemplate} from './menu/dev_menu_template';
 import {editMenuTemplate} from './menu/edit_menu_template';
 import createWindow from './helpers/window';
-import {db} from './back/db/db';
-
-let sequelize = db();
-
 // Special module holding environment variables which you declared
 // in config/env_xxx.json file.
 import env from './env';
@@ -39,8 +35,8 @@ app.on('ready', function () {
     setApplicationMenu();
 
     var mainWindow = createWindow('main', {
-        width: 1000,
-        height: 600
+        width: 1280,
+        height: 720
     });
 
     mainWindow.loadURL(url.format({

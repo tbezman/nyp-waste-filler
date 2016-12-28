@@ -1,8 +1,16 @@
 <div class="row flex">
-        <div class="col-xs-10">
-            <canvas id="canvas" width="600" height="1200"></canvas>
+    <div class="col-xs-9">
+        <canvas id="canvas" width="650" height="800"></canvas>
+    </div>
+    <div class="flex flex-column">
+        <div class="top-room">
+            <div ng-repeat="(db, name) in layout.dbColumns track by $index">
+                <button ng-click="layout.select(db)" type="button" class="button flex-width" ng-class="{'button-outline': !layout.isSelected(db)}">{{ name }}</button>
+            </div>
         </div>
-        <div class="">
-                chooser
+
+        <div class="pin bottom end-xs">
+            <button ng-click="layout.next()" type="button" name="button">Next</button>
         </div>
+    </div>
 </div>

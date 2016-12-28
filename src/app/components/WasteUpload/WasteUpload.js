@@ -1,69 +1,83 @@
-import {ExcelService} from '../../../back/ExcelService';
+import {
+    ExcelService
+} from '../../../back/ExcelService';
 
 class WasteUploadController {
-	constructor($scope, StorageService, DB_FIELD_MAP) {
-		StorageService.watch(this, 'waste_upload', () => {
-			return {
-				columns: this.columns,
-				excelFilePath: this.excelService ? this.excelService.filePath : null,
-			}
-		}, (data) => {
-			console.log('putting data');
-			this.columns = data.columns;
-			this.excelService = new ExcelService();
-			this.excelService.filePath = data.excelFilePath;
-			this.excelService.readData().then(() => { this.onExcelReady() });
-		});
+    constructor($scope, StorageService, DB_FIELD_MAP, $state) {
+		this.$state = $state;
 
-		this.$scope = $scope;
+        StorageService.watch(this, 'waste_upload', () => {
+            return {
+                columns: this.columns,
+                excelFilePath: this.excelService ? this.excelService.filePath : null,
+            }
+        }, (data) => {
+            console.log('putting data');
+            this.columns = data.columns;
+            this.excelService = new ExcelService();
+            this.excelService.filePath = data.excelFilePath;
+            this.excelService.readData().then(() => {
+                this.onExcelReady()
+            });
+        });
 
-		this.dbColumns = DB_FIELD_MAP;
-	}
+        this.$scope = $scope;
 
-	selectFiles() {
-		document.querySelector('#fakeInput').click();
-	}
+        this.dbColumns = DB_FIELD_MAP;
+    }
 
-	onExcelReady() {
-		console.log('Excel ready');
-		this.excelReady = true;
+    selectFiles() {
+        document.querySelector('#fakeInput').click();
+    }
 
-		this.$scope.$apply(() => {
-			this.fileColumns = this.excelService.getColumns();
-		});
-	}
+    onExcelReady() {
+        console.log('Excel ready');
+        this.excelReady = true;
 
-	isReady() {
-		if(!this.columns || !this.fileColumns) return false;
+        this.$scope.$apply(() => {
+            this.fileColumns = this.excelService.getColumns();
+        });
+    }
 
-		return this.excelReady && (Object.keys(this.columns).length == Object.keys(this.fileColumns).length);
-	}
+    isReady() {
+        if (!this.columns || !this.fileColumns) return false;
 
-	onFileLoad(event) {
-		this.excelService = new ExcelService(event.target.result);
+        return this.excelReady && (Object.keys(this.columns).length == Object.keys(this.dbColumns).length);
+    }
 
-		this.excelService.saveData()
-			.then(() => {
-				this.onExcelReady();
-			});
-	}
+    onFileLoad(event) {
+        this.excelService = new ExcelService(event.target.result);
 
-	$onInit() {
-		this.fileReader = new FileReader();
+        this.excelService.saveData()
+            .then(() => {
+                this.onExcelReady();
+            });
+    }
 
-		this.fileReader.onload = (event) => { this.onFileLoad(event) };
+    next() {
+        this.excelService.process(this.columns).then(() => {
+            this.$state.go('pdf-upload');
+        });
+    }
 
-		angular.element(document.querySelector('#fakeInput')).bind('change', event => {
-			this.fileReader.readAsDataURL(event.target.files[0]);
-		});
-	}
+    $onInit() {
+        this.fileReader = new FileReader();
+
+        this.fileReader.onload = (event) => {
+            this.onFileLoad(event)
+        };
+
+        angular.element(document.querySelector('#fakeInput')).bind('change', event => {
+            this.fileReader.readAsDataURL(event.target.files[0]);
+        });
+    }
 }
 
 import waste from './WasteUpload.html';
 
 export const WasteUploadComponent = {
-	template: waste,
+    template: waste,
 
-	controller: WasteUploadController,
-	controllerAs: 'waste'
+    controller: WasteUploadController,
+    controllerAs: 'waste'
 }

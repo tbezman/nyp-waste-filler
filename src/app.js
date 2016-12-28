@@ -7,6 +7,9 @@ import { remote } from 'electron'; // native electron module
 import jetpack from 'fs-jetpack'; // module loaded from npm
 import env from './env';
 import './app/index.modules.js';
+import {db} from './back/db/db';
+
+let sequelize = db();
 
 var path = require('path');
 global.appRoot = path.resolve(__dirname + '/../');

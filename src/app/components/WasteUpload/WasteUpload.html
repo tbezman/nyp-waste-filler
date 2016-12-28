@@ -1,7 +1,7 @@
 <div class="flex flex-column space around top-room">
 	<div class="row center-xs">
 		<h4>Here is where you will upload your Waste Records</h4>
-	</div>	
+	</div>
 
 	<div class="row center-xs animate" ng-hide="waste.excelReady">
 		<p class="leggible">
@@ -20,7 +20,7 @@
 			<div class="padded" ng-repeat="(db, name) in waste.dbColumns">
 				<label>{{ name }}</label>
 				<select ng-model="waste.columns[db]">
-					<option value="{{ fileColumn }}" ng-repeat="(index, fileColumn) in waste.fileColumns">{{ fileColumn }}</option>	
+					<option value="{{ fileColumn }}" ng-repeat="(index, fileColumn) in waste.fileColumns">{{ fileColumn }}</option>
 				</select>
 			</div>
 		</div>
@@ -28,7 +28,7 @@
 
 	<div class="row around-xs">
 		<button ng-click="waste.selectFiles()">Select Files</button>
-		<button class="button button-outline" ng-disabled="!waste.isReady()" ui-sref="pdf-upload">Next</button>
+		<button class="button button-outline" ng-disabled="!waste.isReady()" ng-click="waste.next()">Next</button>
 	</div>
 
 </div>

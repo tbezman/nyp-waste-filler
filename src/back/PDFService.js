@@ -6,15 +6,16 @@ require('pdfjs-dist/web/pdf_viewer'); // Only if you need `PDFJS.PDFViewer`
 PDFJS.workerSrc = '../node_modules/pdfjs-dist/build/pdf.worker.js';
 
 export class PDFService {
-    constructor() {
+    constructor(DB_FIELD_MAP) {
         this.files = [];
+        this.DB_FIELD_MAP = DB_FIELD_MAP;
     }
 
     getDocument(file) {
         return PDFJS.getDocument(file);
     }
 
-    renderToElement(page, selector) {
+    renderToElement(page, selector, textDelegate, initLayout) {
         let element = document.querySelector(selector);
         let context = element.getContext('2d');
         let viewport = page.getViewport(1);
@@ -27,7 +28,11 @@ export class PDFService {
             viewport: scaledViewport
         };
 
-        page.render(renderContext);
+        return new Promise((resolve, reject) => {
+                page.render(renderContext).then(() => {
+                        resolve(renderContext);
+                });
+        });
     }
 
     addFile(data) {

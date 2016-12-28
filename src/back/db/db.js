@@ -14,7 +14,7 @@ export const db = () => {
 	  storage: 'db.sqlite'
 	});
 
-	var WasteLog = sequelize.define('waste_log', {
+	global.WasteLog = sequelize.define('waste_log', {
 		account_number: {
 			type: Sequelize.STRING,
 		},
@@ -28,7 +28,7 @@ export const db = () => {
 			type: Sequelize.DOUBLE
 		},
 		when: {
-			type: Sequelize.DATE	
+			type: Sequelize.DATE
 		}
 	});
 
