@@ -5,7 +5,9 @@ import {
 import moment from 'moment';
 
 class PDFFillerController {
-    constructor($stateParams, StorageService) {
+    constructor($stateParams, StorageService, $scope) {
+        this.$scope = $scope;
+
         this.pdfService = new PDFService();
         this.layout = $stateParams.layout;
         this.pages = [];
@@ -34,6 +36,9 @@ class PDFFillerController {
     setPage(file, page) {
         this.hasSetPage = true;
 
+        this.filePage = page;
+        this.file = file;
+
         this.pdfService.getDocument(file).then(pdf => {
             pdf.getPage(page).then(page => {
                 this.pdfService.renderToElement(page, '#canvas');
@@ -41,18 +46,42 @@ class PDFFillerController {
         })
     }
 
+    select(result) {
+        PDFLog.destroy({
+            where: {
+                'wasteLogID': result.id
+            }
+        }).then(() => {
+            PDFLog.build({
+                file: this.file,
+                page: this.filePage,
+                wasteLogID: result.dataValues.id
+            }).save();
+
+            this.next();
+
+            this.$scope.$apply();
+        })
+    }
+
     next() {
-        this.page++;
-        updatePage();
+        if(this.page == this.pages.length - 1) {
+            this.page = 0;
+        } else this.page++;
+
+        this.updatePage();
     }
 
     previous() {
-        this.page--;
-        updatePage();
+        if(this.page == 0) {
+            this.page = this.pages.length - 1;
+        } else this.page--;
+
+        this.updatePage();
     }
 
     currentPage() {
-        return this.pages[Math.abs(this.page) % this.pages.length];
+        return this.pages[this.pages.length % Math.abs(this.page)];
     }
 
     updatePage() {
@@ -74,7 +103,7 @@ class PDFFillerController {
             ]
         }).then(logs => {
             this.results = logs.filter(log => {
-                if(!this.searchDate) return true;
+                if (!this.searchDate) return true;
 
                 return moment(this.searchDate).diff(moment(log.dataValues.when), 'days') == 0;
             });
