@@ -1,7 +1,7 @@
 import {ExcelService} from '../../../back/ExcelService';
 
 class WasteUploadController {
-	constructor($scope, StorageService) {
+	constructor($scope, StorageService, DB_FIELD_MAP) {
 		StorageService.watch(this, 'waste_upload', () => {
 			return {
 				columns: this.columns,
@@ -17,15 +17,7 @@ class WasteUploadController {
 
 		this.$scope = $scope;
 
-		this.dbColumns = {
-			'account_number': 'Account Number',
-			'patient_number': 'Patient Number',
-			'charge_code': 'Charge Code',
-			'units': 'Units',
-			'rate': 'Rate',
-			'date': 'Date',
-			'time': 'Time'
-		}	
+		this.dbColumns = DB_FIELD_MAP;
 	}
 
 	selectFiles() {
@@ -44,7 +36,7 @@ class WasteUploadController {
 	isReady() {
 		if(!this.columns || !this.fileColumns) return false;
 
-		return this.excelReady && (Object.keys(this.columns).length == Object.keys(this.fileColumns).length);	
+		return this.excelReady && (Object.keys(this.columns).length == Object.keys(this.fileColumns).length);
 	}
 
 	onFileLoad(event) {

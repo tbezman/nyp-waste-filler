@@ -24,5 +24,14 @@ angular.module('app.config', [require('angular-ui-router')])
             parent: 'work',
             template: '<pdf-upload></pdf-upload>'
         })
+        $stateProvider.state({
+            name: 'pdf-layout',
+            url: '/pdf-layout',
+            params: {
+                files: null
+            },
+            parent: 'work',
+            template: '<pdf-layout></pdf-layout>'
+        })
         $urlRouterProvider.otherwise('/');
     });
