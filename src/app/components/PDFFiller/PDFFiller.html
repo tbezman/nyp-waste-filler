@@ -1,12 +1,53 @@
 <div class="flex">
-        <div class="row">
-                <div class="col-xs-6">
-                        <canvas id="canvas" width="650" height="800"></canvas>
-                </div>
+    <div class="row">
+        <div class="col-xs-5">
+            <canvas id="canvas" width="475" height="600"></canvas>
         </div>
-        <div class="">
-                <div class="col-xs-6 col-xs-offset-6">
-                        <button type="button" name="button">stuff</button>
+        <div class="flex col-xs-7">
+            <div class="row bottom-xs">
+                <div class="col-xs-4">
+                    <label for="">Drug</label>
+                    <input type="text" ng-model="filler.searchDrug">
                 </div>
+                <div class="col-xs-4">
+                    <label for="">Date</label>
+                    <input type="text" ng-model="filler.searchDate">
+                </div>
+                <div >
+                    <label for=""></label>
+                    <button class="" type="button" name="button" ng-click="filler.search()">Search</button>
+                </div>
+            </div>
+
+            <div class="drug-table">
+                <table>
+                    <thead>
+                        <th>Drug</th>
+                        <th>Date/Time</th>
+                        <th>Units</th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="result in filler.results">
+                            <td>{{ result.charge_code_descriptor }}</td>
+                            <td>{{ result.when | date }}</td>
+                            <td>{{ result.units }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
+    <div class="row">
+        <div class="row col-xs-6">
+            <div class="row center-xs">
+                <h5>{{ filler.page + 1 }}
+                    of
+                    {{ filler.pages.length }}</h5>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <button type="button" name="button">&lt&lt Previous</button>
+            <button type="button" name="button">Next &gt&gt</button>
+        </div>
+    </div>
 </div>

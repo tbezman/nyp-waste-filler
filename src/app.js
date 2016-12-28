@@ -9,7 +9,7 @@ import env from './env';
 import './app/index.modules.js';
 import {db} from './back/db/db';
 
-let sequelize = db();
+global.sequelize = db();
 
 var path = require('path');
 global.appRoot = path.resolve(__dirname + '/../');

@@ -31,7 +31,6 @@ class WasteUploadController {
     }
 
     onExcelReady() {
-        console.log('Excel ready');
         this.excelReady = true;
 
         this.$scope.$apply(() => {
@@ -42,7 +41,11 @@ class WasteUploadController {
     isReady() {
         if (!this.columns || !this.fileColumns) return false;
 
-        return this.excelReady && (Object.keys(this.columns).length == Object.keys(this.dbColumns).length);
+        console.log(Object.keys(this.columns).length);
+        console.log(Object.keys(this.dbColumns).length);
+        console.log(this.excelReady);
+
+        return this.excelReady && (Object.keys(this.columns).length >= Object.keys(this.dbColumns).length);
     }
 
     onFileLoad(event) {
