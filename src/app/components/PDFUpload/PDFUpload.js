@@ -3,11 +3,13 @@ import {
 } from '../../../back/PDFService';
 
 class PDFUploadController {
-    constructor(StorageService, $state, $scope) {
+    constructor(StorageService, $state, $scope, $timeout) {
         this.pdfService = new PDFService();
 		this.pdfsReady = false;
 		this.$state = $state;
         this.$scope = $scope;
+        this.$timeout = $timeout;
+        this.fileCount = 0;
 
         StorageService.watch(this.files, 'pdf-upload', () => {
             return {
@@ -17,19 +19,21 @@ class PDFUploadController {
             this.pdfService.files = data.files;
 
 			if(data.files.length > 0) {
+                this.fileCount = data.files.length;
 				this.pdfsReady = true;
 			}
         });
     }
 
-	fileCount() {
-		return this.pdfService.files.length;
-	}
-
     onFileLoad(event) {
         let result = event.target.result;
         this.pdfService.addFile(result);
-        this.$scope.$apply();
+        this.pdfsReady = true;
+        this.fileCount++;
+
+        this.$timeout(() => {
+            this.$scope.$apply();
+        }, 1000);
     }
 
     selectFiles() {
