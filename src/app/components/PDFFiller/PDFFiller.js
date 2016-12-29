@@ -5,8 +5,9 @@ import {
 import moment from 'moment';
 
 class PDFFillerController {
-    constructor($stateParams, StorageService, $scope) {
+    constructor($stateParams, StorageService, $scope, $state) {
         this.$scope = $scope;
+        this.$state = $state;
 
         this.pdfService = new PDFService();
         this.layout = $stateParams.layout;
@@ -46,7 +47,6 @@ class PDFFillerController {
 
     select(result) {
         let page = this.currentPage();
-        console.log(page);
         PDFLog.destroy({
             where: {
                 'file': page.file,
@@ -82,6 +82,8 @@ class PDFFillerController {
     }
 
     currentPage() {
+        console.log(this.page);
+        console.log(this.pages[this.page]);
         return this.pages[this.page];
     }
 
@@ -112,7 +114,8 @@ class PDFFillerController {
     }
 
     nextPage() {
-
+        console.log(this.layout);
+        this.$state.go('done', {layout: this.layout});
     }
 
     $onInit() {

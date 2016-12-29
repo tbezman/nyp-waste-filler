@@ -35,7 +35,7 @@ export const db = () => {
             type: Sequelize.DATE
         }
     }, {
-        instance_methods: {
+        instanceMethods: {
             vial() {
                 return VialService.getInstance().vialForDrug(this.charge_code_descriptor);
             },

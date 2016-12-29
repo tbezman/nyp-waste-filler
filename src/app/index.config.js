@@ -46,12 +46,18 @@ angular.module('app.config', [require('angular-ui-router')])
         $stateProvider.state({
             name: 'done',
             url: '/done',
+            params: {
+                layout: null
+            },
             parent: 'work',
             template: '<done></done>'
         })
         $stateProvider.state({
             name: 'vial-config',
             url: '/vial-config',
+            params: {
+                layout: null
+            },
             parent: 'work',
             template: '<vial-config></vial-config>'
         })
