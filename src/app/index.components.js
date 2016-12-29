@@ -7,6 +7,7 @@ import {WorkFlowComponent} from './components/WorkFlow/WorkFlow';
 import {PDFLayoutComponent} from './components/PDFLayout/PDFLayout';
 import {PDFFillerComponent} from './components/PDFFiller/PDFFiller';
 import {VialConfigComponent} from './components/VialConfig/VialConfig';
+import {DoneComponent} from './components/Done/Done';
 
 angular.module('app.components', [])
     .component('home', HomeComponent)
@@ -15,4 +16,5 @@ angular.module('app.components', [])
     .component('workFlow', WorkFlowComponent)
     .component('pdfLayout', PDFLayoutComponent)
     .component('pdfFiller', PDFFillerComponent)
-    .component('vialConfig', VialConfigComponent);
+    .component('vialConfig', VialConfigComponent)
+    .component('done', DoneComponent);

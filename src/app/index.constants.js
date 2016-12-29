@@ -11,7 +11,7 @@ global.DB_FIELD_MAP = {
     'time': 'Time'
 };
 
-global.DRAWABLE_MAP = Object.assign(DB_FIELD_MAP, {
+global.DRAWABLE_MAP = Object.assign(angular.copy(DB_FIELD_MAP), {
     'charge': "Charge",
     'vial_config': 'Vial Config'
 });

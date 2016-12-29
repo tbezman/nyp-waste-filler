@@ -28,8 +28,6 @@ class PDFFillerController {
             }
 
             this.layout = data.layout || {};
-
-            this.$onInit();
         })
     }
 
@@ -47,15 +45,18 @@ class PDFFillerController {
     }
 
     select(result) {
+        let page = this.currentPage();
+        console.log(page);
         PDFLog.destroy({
             where: {
-                'wasteLogID': result.id
+                'file': page.file,
+                'page': page.page
             }
         }).then(() => {
             PDFLog.build({
-                file: this.file,
-                page: this.filePage,
-                wasteLogID: result.dataValues.id
+                file: page.file,
+                page: page.page,
+                wasteLogId: result.dataValues.id
             }).save();
 
             this.next();
@@ -81,7 +82,7 @@ class PDFFillerController {
     }
 
     currentPage() {
-        return this.pages[this.pages.length % Math.abs(this.page)];
+        return this.pages[this.page];
     }
 
     updatePage() {
@@ -110,11 +111,14 @@ class PDFFillerController {
         });
     }
 
+    nextPage() {
+
+    }
+
     $onInit() {
         this.hasSetPage = false;
         this.page = 0;
 
-        console.log(this.pdfService.files);
         this.pdfService.files.forEach(file => {
             PDFJS.getDocument(file).then(pdf => {
                 for (var i = 1; i <= pdf.numPages; i++) {

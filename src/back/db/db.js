@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import {VialService} from '../VialService';
 
 export const db = () => {
     let sequelize = new Sequelize('db', 'username', 'password', {
@@ -32,6 +33,21 @@ export const db = () => {
         },
         when: {
             type: Sequelize.DATE
+        }
+    }, {
+        instance_methods: {
+            vial() {
+                return VialService.getInstance().vialForDrug(this.charge_code_descriptor);
+            },
+            bestConfig() {
+                return VialService.getInstance().bestConfigForVial(this.vial());
+            },
+            wasted_units() {
+                return this.bestConfig().waste / this.vial().billable_units;
+            },
+            charge() {
+                return this.charge_code + ' ' + this.wasted_units() + '@' + this.rate;
+            }
         }
     });
 

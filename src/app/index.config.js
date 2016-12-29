@@ -44,6 +44,12 @@ angular.module('app.config', [require('angular-ui-router')])
             template: '<pdf-filler></pdf-filler>'
         })
         $stateProvider.state({
+            name: 'done',
+            url: '/done',
+            parent: 'work',
+            template: '<done></done>'
+        })
+        $stateProvider.state({
             name: 'vial-config',
             url: '/vial-config',
             parent: 'work',

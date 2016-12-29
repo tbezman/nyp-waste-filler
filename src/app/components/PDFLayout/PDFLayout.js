@@ -69,9 +69,9 @@ class PDFLayoutController {
             let x = event.offsetX;
             let y = event.offsetY;
 
-            let key = Object.keys(DB_FIELD_MAP)[this.step];
+            let key = Object.keys(DRAWABLE_MAP)[this.step];
 
-            context.fillText(DB_FIELD_MAP[key], x, y);
+            context.fillText(DRAWABLE_MAP[key], x, y);
 
             if(!this.layout.hasOwnProperty(key)) {
                 this.layout[key] = [];
@@ -88,7 +88,7 @@ class PDFLayoutController {
             let positions = this.layout[key];
 
             positions.forEach(position => {
-                renderContext.canvasContext.fillText(DB_FIELD_MAP[key], position.x * renderContext.viewport.width, position.y * renderContext.viewport.height);
+                renderContext.canvasContext.fillText(DRAWABLE_MAP[key], position.x * renderContext.viewport.width, position.y * renderContext.viewport.height);
             })
         }
     }
