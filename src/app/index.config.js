@@ -43,5 +43,11 @@ angular.module('app.config', [require('angular-ui-router')])
             parent: 'work',
             template: '<pdf-filler></pdf-filler>'
         })
+        $stateProvider.state({
+            name: 'vial-config',
+            url: '/vial-config',
+            parent: 'work',
+            template: '<vial-config></vial-config>'
+        })
         $urlRouterProvider.otherwise('/');
     });

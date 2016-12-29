@@ -1,0 +1,34 @@
+<div class="">
+    <div class="row center-xs">
+        <p class="leggible">
+            Here is where you will configure vials and their sizes. Each Row represents the configuration for a potential drug. The right side is comma delimited list of the vial sizes. The third field is the unit for the vial. Please do not forget to click 'Save' when you are done.
+        </p>
+    </div>
+    <div class="row flex-width center-xs space around">
+        <button class="button" ng-click="config.save()">Save</button>
+        <button class="button-outline" ng-click="config.add()">Add</button>
+    </div>
+
+    <div class="drug-table">
+        <table>
+            <thead>
+                <th>Drug</th>
+                <th>Configuraition</th>
+                <th>Billable Units</th>
+                <th>Unit</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="vialConfig in config.vials">
+                    <td><input type="text" ng-model="vialConfig.drug"></td>
+                    <td><input type="text" ng-model="vialConfig.vial_size"></td>
+                    <td><input type="text" ng-model="vialConfig.billable_units"></td>
+                    <td><input type="text" ng-model="vialConfig.unit"></td>
+                    <td>
+                        <button ng-click="config.delete(vialConfig)" class="button" type="button" name="button">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
