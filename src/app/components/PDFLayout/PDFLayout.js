@@ -28,7 +28,8 @@ class PDFLayoutController {
             this.layout = data.layout || {};
         });
 
-        this.dbColumns = DB_FIELD_MAP;
+        this.dbColumns = DRAWABLE_MAP;
+        console.log(this.dbColumns);
     }
 
     isSelected(db) {

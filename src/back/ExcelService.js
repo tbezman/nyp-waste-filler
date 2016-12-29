@@ -16,6 +16,7 @@ export class ExcelService {
 			this.workbook = new Excel.Workbook();
 			this.workbook.xlsx.readFile(this.filePath)
 				.then(() => {
+					console.log(this.workbook.worksheets);
 					this.worksheet = this.workbook.worksheets[0];
 					resolve();
 				});

@@ -18,6 +18,9 @@ export const db = () => {
         account_number: {
             type: Sequelize.STRING,
         },
+        charge_code: {
+            type: Sequelize.STRING
+        },
         charge_code_descriptor: {
             type: Sequelize.STRING
         },

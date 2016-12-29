@@ -1,0 +1,6 @@
+#!/bin/sh
+rm db.sqlite
+touch db.sqlite
+rm files/storage.json
+touch files/storage.json
+echo "{}" >> files/storage.json

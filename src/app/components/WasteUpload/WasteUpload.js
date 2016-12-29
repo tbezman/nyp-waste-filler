@@ -4,21 +4,21 @@ import {
 
 class WasteUploadController {
     constructor($scope, StorageService, DB_FIELD_MAP, $state) {
-		this.$state = $state;
+        this.$state = $state;
 
         StorageService.watch(this, 'waste_upload', () => {
             return {
+                fileColumns: this.fileColumns,
                 columns: this.columns,
                 excelFilePath: this.excelService ? this.excelService.filePath : null,
             }
         }, (data) => {
-            console.log('putting data');
+            this.hasInsertedIntoDB = true;
+            this.fileColumns = data.fileColumns;
             this.columns = data.columns;
             this.excelService = new ExcelService();
             this.excelService.filePath = data.excelFilePath;
-            this.excelService.readData().then(() => {
-                this.onExcelReady()
-            });
+            this.excelReady = true;
         });
 
         this.$scope = $scope;
@@ -41,14 +41,11 @@ class WasteUploadController {
     isReady() {
         if (!this.columns || !this.fileColumns) return false;
 
-        console.log(Object.keys(this.columns).length);
-        console.log(Object.keys(this.dbColumns).length);
-        console.log(this.excelReady);
-
         return this.excelReady && (Object.keys(this.columns).length >= Object.keys(this.dbColumns).length);
     }
 
     onFileLoad(event) {
+        this.hasInsertedIntoDB = false;
         this.excelService = new ExcelService(event.target.result);
 
         this.excelService.saveData()
@@ -58,6 +55,13 @@ class WasteUploadController {
     }
 
     next() {
+        //If we already inserted, we don't need to put the records in again
+        if (this.hasInsertedIntoDB) {
+            this.$state.go('pdf-upload');
+            return;
+        }
+
+        //Otherwise process
         this.excelService.process(this.columns).then(() => {
             this.$state.go('pdf-upload');
         });
