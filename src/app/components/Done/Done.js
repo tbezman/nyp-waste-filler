@@ -1,5 +1,6 @@
 import hummus from 'hummus';
 import {PDFService} from '../../../back/PDFService';
+let jsPDF = require('jsPDF');
 
 class DoneController {
     constructor($stateParams, StorageService) {
@@ -34,41 +35,49 @@ class DoneController {
         return this.readerCache[file];
     }
 
-    writeToLog(index, log, writer) {
-
-        for (var field in this.layout) {
+    writeToLog(log, canvas, pdfContext, pdf) {
+        let context = canvas.getContext('2d');
+        let viewport = pdfContext.viewport;
+        for(var field in this.layout) {
             let positions = this.layout[field];
 
+            var data = log.waste_log[field];
+
             positions.forEach(position => {
-                context.writeText('text', 600, 800);
+                context.font = "20px Roboto";
+                context.fillText(data, position.x * viewport.width, position.y * viewport.height);
             });
         }
 
-        modifier.endContext().writePage();
+        let imageData = canvas.toDataURL('image/jpeg');
+        pdf.addImage(imageData, 'JPEG', 0, 0);
     }
 
     writeLogs() {
-        let file = appRoot + '/files/' + guid() + '.pdf';
-        var writer = hummus.createWriter(file);
-        let indexMap = {};
+        let wholePDF = new jsPDF();
+        let finishedCount = 0;
+        let addedPage = false;
+        this.pdfLogs.forEach(log => {
+            PDFJS.getDocument(log.file).then(pdf => {
+                pdf.getPage(log.page).then(page => {
+                    let canvas = document.createElement('canvas');
+                    canvas.width = 800;
+                    canvas.height = 1200;
+                    this.pdfService.renderToElement(page, canvas).then(context => {
+                        let canvasContext = context.canvasContext;
+                        this.writeToLog(log, canvas, context, addedPage ? wholePDF.addPage() : wholePDF);
 
-        this.pdfLogs.forEach((log, index) => {
-            let page = log.page - 1;
-            let reader = this.readerForFile(log.file);
-            writer.createPDFCopyingContext(reader).appendPDFPageFromPDF(page);
+                        if(!addedPage) {addedPage = true}
 
-            indexMap[index] = log;
+                        finishedCount++;
+
+                        if(finishedCount == this.pdfLogs.length) {
+                            wholePDF.save(appRoot + '/files/done.pdf');
+                        }
+                    });
+                });
+            });
         });
-        writer.end();
-
-        let modifiedPath = appRoot + '/files/' + guid() + '.pdf';
-        writer = hummus.createWriter(modifiedPath);
-
-        for(var index in indexMap) {
-            this.writeToLog(indexMap[index], index, writer);
-        }
-
-        writer.end();
     }
 }
 

@@ -19,6 +19,9 @@ export const db = () => {
         account_number: {
             type: Sequelize.STRING,
         },
+        patient_number: {
+            type: Sequelize.STRING
+        },
         charge_code: {
             type: Sequelize.STRING
         },
@@ -35,18 +38,22 @@ export const db = () => {
             type: Sequelize.DATE
         }
     }, {
-        instanceMethods: {
-            vial() {
+        getterMethods: {
+            vial: function() {
                 return VialService.getInstance().vialForDrug(this.charge_code_descriptor);
             },
-            bestConfig() {
-                return VialService.getInstance().bestConfigForVial(this.vial());
+            bestConfig: function() {
+                if(!this.vial) return null;
+
+                return VialService.getInstance().bestConfigForVial(this.vial, this.units);
             },
-            wasted_units() {
-                return this.bestConfig().waste / this.vial().billable_units;
+            wasted_units: function() {
+                if(!this.vial) return null;
+
+                return this.bestConfig.waste / this.vial.billable_units;
             },
-            charge() {
-                return this.charge_code + ' ' + this.wasted_units() + '@' + this.rate;
+            charge: function() {
+                return this.charge_code + ' ' + this.wasted_units + '@' + this.rate;
             }
         }
     });

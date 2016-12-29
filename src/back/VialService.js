@@ -94,11 +94,14 @@ export class VialService {
     bestConfigForVial(vial, billed) {
         let key = vial.vial_size + ':' + billed;
 
+        console.log(key, billed);
+
         if (this.vialCache.hasOwnProperty(key)) {
             return this.vialCache[key];
         }
 
         let config = this.allPermuationsOfVialSizes(billed, vial)[0];
+
 
         this.vialCache[key] = config;
 
@@ -110,7 +113,7 @@ export class VialService {
 
         for(var key in this.vials) {
             let vial = this.vials[key];
-            if(vial.drug == drugName) {
+            if(vial.drug.toLowerCase() == drugName.toLowerCase()) {
                 return vial
             }
         }

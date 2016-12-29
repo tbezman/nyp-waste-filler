@@ -15,8 +15,10 @@ export class PDFService {
         return PDFJS.getDocument(file);
     }
 
+
+
     renderToElement(page, selector, textDelegate, initLayout) {
-        let element = document.querySelector(selector);
+        let element = typeof(selector) == 'string' ? document.querySelector(selector) : selector;
         let context = element.getContext('2d');
         let viewport = page.getViewport(1);
         let scaledViewport = page.getViewport(element.width / viewport.width);
