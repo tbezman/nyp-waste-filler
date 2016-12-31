@@ -13,14 +13,15 @@ global.DB_FIELD_MAP = {
 
 global.DRAWABLE_MAP = Object.assign(angular.copy(DB_FIELD_MAP), {
     'charge': "Charge",
-    'vial_config': 'Vial Config'
+    'vial_config': 'Vial Config',
+    'entered_waste': 'Entered Waste'
 });
 
 global.PREFIX_MAP = {
     'patient_number': 'MRN: ',
     'account_number': 'ACCT: ',
     'vial_config': 'Vial Config: '
-}
+};
 
 angular.module('app.constants', [])
     .constant("DB_FIELD_MAP", DB_FIELD_MAP);

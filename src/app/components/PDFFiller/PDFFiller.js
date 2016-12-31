@@ -2,6 +2,8 @@ import {
     PDFService
 } from '../../../back/PDFService';
 
+import {VialService} from '../../../back/VialService';
+
 import moment from 'moment';
 
 class PDFFillerController {
@@ -9,10 +11,15 @@ class PDFFillerController {
         this.$scope = $scope;
         this.$state = $state;
 
+        this.filterDone = false;
+
         this.pdfService = new PDFService();
         this.layout = $stateParams.layout;
         this.pages = [];
+        this.allPages = [];
         this.hasSetPage = false;
+
+        this.vialService = new VialService();
 
         if ($stateParams.files) {
             this.pdfService.files = $stateParams.files;
@@ -28,8 +35,38 @@ class PDFFillerController {
                 this.pdfService.files = data.files;
             }
 
-            this.layout = data.layout || {};
+            if (!$stateParams.layout) {
+                this.layout = data.layout || {};
+            }
         })
+    }
+
+    setAsProblem() {
+        let page = this.currentPage();
+
+        PDFLog.find({
+            where: {
+                'file': page.file,
+                'page': page.page
+            }
+        }).then(log => {
+            if (log) {
+                return log.updateAttributes({
+                    problematic: !!!log.problematic
+                });
+            } else {
+                return PDFLog.build({
+                    file: page.file,
+                    page: page.page,
+                    problematic: true
+                }).save();
+            }
+
+        }).then(log => {
+            page.problematic = log.problematic;
+        });
+
+        this.next();
     }
 
     setPage(file, page) {
@@ -45,8 +82,29 @@ class PDFFillerController {
         })
     }
 
-    select(result) {
+    updateWastedAmount() {
         let page = this.currentPage();
+
+        PDFLog.find({
+            where: {
+                'file': page.file,
+                'page': page.page
+            },
+            include: [WasteLog]
+        }).then(pdf => {
+            let log = pdf.waste_log;
+
+            log.updateAttributes({
+                wasted_amount: page.wasted_amount
+            })
+        });
+
+        this.next();
+    }
+
+    select(result, only) {
+        let page = this.currentPage();
+
         PDFLog.destroy({
             where: {
                 'file': page.file,
@@ -56,17 +114,41 @@ class PDFFillerController {
             PDFLog.build({
                 file: page.file,
                 page: page.page,
+                only_patient: only,
                 wasteLogId: result.dataValues.id
             }).save();
 
-            this.next();
+            page.done = true;
+            page.waste_log = result;
+            page.wasted_amount = page.waste_log.wasted_amount;
+            page.matchingVial = this.vialService.vialForDrug(result.charge_code_descriptor);
+
+            console.log(page.matchingVial);
 
             this.$scope.$apply();
         })
     }
 
+    nextIncomplete() {
+        let newPage = this.page;
+
+        for (var i = this.page + 1; i < this.pages.length; i++) {
+            this.page = i;
+
+            let page = this.currentPage();
+
+            if (!page.done) {
+                newPage = i;
+                break;
+            }
+        }
+
+        this.page = newPage;
+        this.updatePage();
+    }
+
     next() {
-        if(this.page == this.pages.length - 1) {
+        if (this.page == this.pages.length - 1) {
             this.page = 0;
         } else this.page++;
 
@@ -74,7 +156,7 @@ class PDFFillerController {
     }
 
     previous() {
-        if(this.page == 0) {
+        if (this.page == 0) {
             this.page = this.pages.length - 1;
         } else this.page--;
 
@@ -82,8 +164,6 @@ class PDFFillerController {
     }
 
     currentPage() {
-        console.log(this.page);
-        console.log(this.pages[this.page]);
         return this.pages[this.page];
     }
 
@@ -92,50 +172,96 @@ class PDFFillerController {
         this.setPage(page.file, page.page);
     }
 
-    search() {
-        let wheres = [{
-            'charge_code_descriptor': {
-                $like: '%' + (this.searchDrug || '') + '%'
+    updateFilters() {
+        this.pages = this.allPages.filter(page => {
+            if (this.filterDone) {
+                return !page.done;
             }
-        }];
+
+            return true;
+        });
+
+        this.updatePage();
+    }
+
+    toggleDone() {
+        this.filterDone = !this.filterDone;
+
+        this.updateFilters();
+    }
+
+    search() {
+        let wheres = [];
+
+        if (this.searchDrug) {
+            wheres.push({
+                'charge_code_descriptor': {
+                    $like: '%' + (this.searchDrug || '') + '%'
+                }
+            });
+        }
 
         WasteLog.findAll({
             where: sequelize.and(wheres),
             order: [
-                ['charge_code_descriptor', 'ASC', 'when', 'ASC']
+                ['when', 'ASC'],
+                ['charge_code_descriptor', 'ASC']
             ]
         }).then(logs => {
             this.results = logs.filter(log => {
                 if (!this.searchDate) return true;
 
-                return moment(this.searchDate).diff(moment(log.dataValues.when), 'days') == 0;
+                return moment(this.searchDate).startOf('day').isSame(moment(log.dataValues.when).startOf('day'));
             });
         });
     }
 
     nextPage() {
         console.log(this.layout);
-        this.$state.go('done', {layout: this.layout});
+        this.$state.go('done', {
+            layout: this.layout
+        });
     }
 
     $onInit() {
         this.hasSetPage = false;
         this.page = 0;
 
-        this.pdfService.files.forEach(file => {
-            PDFJS.getDocument(file).then(pdf => {
-                for (var i = 1; i <= pdf.numPages; i++) {
-                    this.pages.push({
-                        file: file,
-                        page: i
-                    });
+        this.pages = this.allPages;
 
-                    if (!this.hasSetPage) {
-                        this.setPage(file, 1);
-                    }
-                }
+        PDFLog.findAll({include: [WasteLog]})
+            .then(logs => {
+                this.pdfService.files.forEach(file => {
+                    PDFJS.getDocument(file).then(pdf => {
+                        for (var i = 1; i <= pdf.numPages; i++) {
+                            let page = {
+                                file: file,
+                                page: i
+                            };
+
+                            logs.forEach(log => {
+                                if (log.file == file && log.page == i) {
+                                    page.done = true;
+                                    page.waste_log = log.waste_log;
+                                    page.problematic = log.problematic;
+
+                                    if (log.waste_log) {
+                                        page.wasted_amount = log.waste_log.wasted_amount;
+                                        page.matchingVial = this.vialService.vialForDrug(log.waste_log.charge_code_descriptor);
+                                    }
+                                }
+                            });
+
+                            this.allPages.push(page);
+
+
+                            if (!this.hasSetPage) {
+                                this.setPage(file, 1);
+                            }
+                        }
+                    });
+                })
             });
-        })
     }
 }
 

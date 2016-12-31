@@ -99,7 +99,7 @@ class PDFLayoutController {
 
     $onInit() {
         this.currentFile = this.pdfService.files[0];
-        this.page = 1;
+        this.page = 2;
 
         this.pdfService.getDocument(this.currentFile).then(pdf => {
                 pdf.getPage(this.page).then(page => {

@@ -14,23 +14,48 @@
                     <input type="text" ng-model="filler.searchDate">
                 </div>
                 <div>
-                    <button id='searchButton' class="" type="button" name="button" ng-click="filler.search()">Search</button>
+                    <button id='searchButton' class="" type="button" name="button" ng-click="filler.search()">Search
+                    </button>
+                </div>
+            </div>
+
+            <div class="row center-xs bottom-xs" ng-class="{invisible: !filler.currentPage().waste_log}">
+                <div class="col-xs-4">
+                    <label for="">Wasted Amount({{ filler.currentPage().matchingVial.unit }})</label>
+                    <input type="text" ng-model="filler.currentPage().wasted_amount">
+                </div>
+                <div class="col-xs-1">
+                    <button ng-click="filler.updateWastedAmount()" class="button button-outline button-bottom-room">
+                        Update
+                    </button>
                 </div>
             </div>
 
             <div class="drug-table">
                 <table>
                     <thead>
-                        <th>Drug</th>
-                        <th>Date/Time</th>
-                        <th>Units</th>
+                    <th>Drug</th>
+                    <th>Date/Time</th>
+                    <th>Units</th>
+                    <th>Actions</th>
                     </thead>
                     <tbody>
-                        <tr class="selectable" ng-repeat="result in filler.results" ng-click="filler.select(result)">
-                            <td>{{ result.dataValues.charge_code_descriptor }}</td>
-                            <td>{{ result.dataValues.when | date: 'short' }}</td>
-                            <td>{{ result.dataValues.units }}</td>
-                        </tr>
+                    <tr class="selected" ng-show="filler.currentPage().waste_log">
+                        <td>{{ filler.currentPage().waste_log.charge_code_descriptor }}</td>
+                        <td>{{ filler.currentPage().waste_log.when | date: 'short' }}</td>
+                        <td>{{ filler.currentPage().waste_log.units }}</td>
+                        <td>NA</td>
+                    </tr>
+                    <tr class="selectable" ng-class="{strange: result.units < 0}" ng-repeat="result in filler.results">
+                        <td>{{ result.dataValues.charge_code_descriptor }}</td>
+                        <td>{{ result.dataValues.when | date: 'short' }}</td>
+                        <td>{{ result.dataValues.units }}</td>
+                        <td>
+                            <button type="button" name="button" ng-click="filler.select(result, false)">Select</button>
+                            <button type="button" name="button" ng-click="filler.select(result, true)">Only Paitent
+                            </button>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -38,13 +63,24 @@
     </div>
     <div class="row top-room">
         <div class="row col-xs-5">
-            <div class="row center-xs">
-                <h4>{{ filler.page + 1 }}
+            <div class="row center-xs middle-xs space around">
+                <h5 class="col-xs-3"
+                    ng-class="{done: filler.currentPage().waste_log, incomplete: !filler.currentPage().waste_log, problematic: filler.currentPage().problematic}">
+                    {{ filler.currentPage().problematic ? 'Problematic' : (filler.currentPage().waste_log ? 'Complete' : 'Incomplete') }}
+                </h5>
+                <h5 class="col-xs-3">{{ filler.page + 1 }}
                     of
-                    {{ filler.pages.length }}</h4>
+                    {{ filler.pages.length }}
+                </h5>
+            </div>
+            <div class="row space around">
+                <button class="button col-xs-4" ng-class="{'button-outline': !filler.filterDone}" ng-click="filler.toggleDone()">Filter Done</button>
+                <button class="button button-outline col-xs-4" ng-click="filler.setAsProblem()">Problem</button>
+                <button class="button button-outline col-xs-4" ng-click="filler.nextIncomplete()">Next Incomplete
+                </button>
             </div>
         </div>
-        <div class="col-xs-6 space around">
+        <div class="col-xs-6 space around top-room">
             <button type="button" name="button" ng-click="filler.previous()">&lt&lt Previous Log</button>
             <button type="button" name="button" ng-click="filler.next()">Next Log &gt&gt</button>
             <button type="button" name="button" ng-click="filler.nextPage()">Next</button>

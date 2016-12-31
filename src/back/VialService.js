@@ -68,7 +68,7 @@ export class VialService {
             let maxAmount = Math.ceil(parseFloat(billed) / vialSize);
             for (var i = 0; i < maxAmount; i++)
                 verbose.push(vialSize);
-        })
+        });
 
         let wastes = [];
 
@@ -109,13 +109,21 @@ export class VialService {
     }
 
     vialForDrug(drug) {
-        let drugName = drug.split(' ')[0];
+        drug = drug.toLowerCase();
 
         for(var key in this.vials) {
             let vial = this.vials[key];
-            if(vial.drug.toLowerCase() == drugName.toLowerCase()) {
-                return vial
+            let vialWords = vial.drug.toLowerCase().split(' ');
+            var good = true;
+
+            for(var vialKey in vialWords) {
+                let vialWord = vialWords[vialKey];
+
+                if(drug.indexOf(vialWord) < 0) good = false;
             }
+
+            if (good) return vial;
+
         }
     }
 }

@@ -31,6 +31,9 @@ export const db = () => {
         units: {
             type: Sequelize.DOUBLE
         },
+        wasted_amount: {
+            type: Sequelize.DOUBLE
+        },
         rate: {
             type: Sequelize.DOUBLE
         },
@@ -45,15 +48,34 @@ export const db = () => {
             bestConfig: function() {
                 if(!this.vial) return null;
 
-                return VialService.getInstance().bestConfigForVial(this.vial, this.units);
+                return VialService.getInstance().bestConfigForVial(this.vial, this.units * this.vial.billable_units);
             },
-            wasted_units: function() {
+            vial_config: function() {
+                if(!this.bestConfig) return null;
+
+                return '[' + this.bestConfig.config.join(', ') + ']';
+            },
+            smallest_vial_size: function () {
+                let vialSizes = this.vial.vial_size.split(',').map(num => { return parseFloat(num)});
+                return Math.min.apply(Math, vialSizes);
+            },
+            charged_waste: function() {
                 if(!this.vial) return null;
 
-                return this.bestConfig.waste / this.vial.billable_units;
+                console.log(this.smallest_vial_size, this.wasted_amount, this.bestConfig.waste);
+                return Math.min(this.smallest_vial_size, this.wasted_amount, this.bestConfig.waste);
+            },
+            wasted_units: function() {
+                if(!this.vial) return 0.0;
+
+                return this.charged_waste / this.vial.billable_units;
+            },
+            entered_waste: function () {
+                console.log('waste:' + this.wasted_amount);
+                return this.wasted_amount.toString();
             },
             charge: function() {
-                return this.charge_code + ' ' + this.wasted_units + '@' + this.rate;
+                return this.charge_code + ' ' + this.wasted_units.toFixed(2) + '@' + this.rate;
             }
         }
     });
@@ -64,8 +86,14 @@ export const db = () => {
         },
         page: {
             type: Sequelize.INTEGER
+        },
+        only_patient: {
+            type: Sequelize.BOOLEAN
+        },
+        problematic: {
+            type: Sequelize.BOOLEAN
         }
-    })
+    });
 
     PDFLog.belongsTo(WasteLog);
 

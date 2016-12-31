@@ -12,6 +12,23 @@ body {
     font-family: sans-serif;
 }
 
+.done {
+    color: green;
+}
+
+.incomplete {
+    color: #a68f0a;
+}
+
+.problematic {
+    color: #a00018;
+}
+
+.button-bottom-room {
+    position: relative;
+    bottom: 5px;
+}
+
 #searchButton {
     position: relative;
     bottom: 5px;
@@ -25,6 +42,10 @@ body {
     }
 }
 
+.invisible {
+    visibility: hidden;
+}
+
 .vert-center {
     position: relative;
     top: 50%;
@@ -32,8 +53,16 @@ body {
 }
 
 .drug-table {
-    height: calc(~'100vh - 200px');
+    height: calc(~'100vh - 400px');
     overflow: auto;
+}
+
+.selected {
+    background-color: rgba(155, 77, 202, 0.18);
+}
+
+.strange {
+    background-color: rgba(255,57,77,0.55);
 }
 
 a {
