@@ -1,7 +1,6 @@
 import hummus from 'hummus';
-import {
-    PDFService
-} from '../../../back/PDFService';
+import {PDFService} from '../../../back/PDFService';
+import {ExportService} from '../../../back/ExportService';
 let fs = require('fs');
 let jsPDF = require('jsPDF');
 let moment = require('moment');
@@ -37,13 +36,6 @@ class DoneController {
             })
     }
 
-    saveFile(path, name) {
-        let a = document.createElement('a');
-        a.href = path;
-        a.download = name;
-        a.click();
-    }
-
     findUnhandledDrugs() {
         this.pdfLogs.forEach(log => {
             let waste = log.waste_log;
@@ -60,6 +52,11 @@ class DoneController {
         this.SpinnerService.show();
 
         this.writeLogs()
+    }
+
+    backup() {
+        let exportService = new ExportService();
+        exportService.backup();
     }
 
     readerForFile(file) {
@@ -257,10 +254,10 @@ class DoneController {
 
             this.writeCSV(this.pdfLogs)
                 .then(path => {
-                    this.saveFile(path, 'Waste Records.csv');
+                    saveFile(path, 'Waste Records.csv');
                 });
 
-            this.saveFile(this.writeBatchFile(this.pdfLogs), 'Batch File.txt');
+            saveFile(this.writeBatchFile(this.pdfLogs), 'Batch File.txt');
         })
     }
 }

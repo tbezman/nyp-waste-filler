@@ -9,8 +9,14 @@ import env from './env';
 import './app/index.modules.js';
 import fs from 'fs';
 
-
 var path = require('path');
+
+global.saveFile = function(path, name) {
+    let a = document.createElement('a');
+    a.href = path;
+    a.download = name;
+    a.click();
+}
 
 global.guid = function() {
 	function s4() {

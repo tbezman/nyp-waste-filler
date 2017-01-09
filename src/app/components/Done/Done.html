@@ -11,7 +11,10 @@
         </tbody>
     </table>
 
-    <button class="button" ng-click="done.process()">Process</button>
+    <div class="flex space around">
+        <button class="button" ng-click="done.process()">Process</button>
+        <button class="button" ng-click="done.backup()">Backup Data</button>
+    </div>
 </div>
 <canvas id="canvas" width="600" height="1000"></canvas>
 <img ng-src="{{ done.image }}" alt="">

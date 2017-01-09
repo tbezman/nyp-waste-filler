@@ -7,9 +7,10 @@ import {VialService} from '../../../back/VialService';
 import moment from 'moment';
 
 class PDFFillerController {
-    constructor($stateParams, StorageService, $scope, $state) {
+    constructor($stateParams, StorageService, $scope, $state, SpinnerService) {
         this.$scope = $scope;
         this.$state = $state;
+        this.SpinnerService = SpinnerService;
 
         this.filterDone = false;
 
@@ -229,6 +230,8 @@ class PDFFillerController {
 
         this.pages = this.allPages;
 
+        this.SpinnerService.show();
+
         PDFLog.findAll({include: [WasteLog]})
             .then(logs => {
                 this.pdfService.files.forEach(file => {
@@ -241,7 +244,6 @@ class PDFFillerController {
 
                             logs.forEach(log => {
                                 if (log.file == file && log.page == i) {
-                                    console.log('found one');
                                     page.done = true;
                                     page.waste_log = log.waste_log;
                                     page.problematic = log.problematic;
@@ -258,6 +260,7 @@ class PDFFillerController {
 
                             if (!this.hasSetPage) {
                                 this.setPage(file, 1);
+                                this.SpinnerService.hide();
                             }
                         }
                     });
