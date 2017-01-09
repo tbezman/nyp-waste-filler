@@ -28,28 +28,29 @@ export class ExportService {
 	}
 
 	createZipOfFiles(files) {
-		let zip = new JSZip();
+		return new Promise((resolve, reject) => {
+			let zip = new JSZip();
 
-		files.forEach(file => {
-			let name = path.basename(file);
-			console.log(name);
-			zip.file(name, fs.createReadStream(file));
-		});
-
-		let filePath = appRoot + '/files/backup-' + guid() + '.zip';
-
-		zip.generateNodeStream({type: 'nodebuffer', streamFiles: true})
-			.pipe(fs.createWriteStream(filePath))
-			.on('finish', () => {
-				saveFile(filePath, 'nyp-backup.zip');	
+			files.forEach(file => {
+				let name = path.basename(file);
+				zip.file(name, fs.createReadStream(file));
 			});
 
+			let filePath = appRoot + '/files/backup-' + guid() + '.zip';
+
+			zip.generateNodeStream({type: 'nodebuffer', streamFiles: true})
+				.pipe(fs.createWriteStream(filePath))
+				.on('finish', () => {
+					saveFile(filePath, 'nyp-backup.zip');	
+					resolve();
+				});
+			});
 	}
 
 	backup() {
-		this.files()
+		return this.files()
 			.then(files => {
-				this.createZipOfFiles(files);
+				return this.createZipOfFiles(files);
 			});
 	}
 }

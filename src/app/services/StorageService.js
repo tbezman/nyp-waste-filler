@@ -1,4 +1,5 @@
 import fs from 'fs';
+let ipcRenderer = require('electron').ipcRenderer;
 
 export class StorageService {
     constructor($rootScope, $interval) {
@@ -11,7 +12,16 @@ export class StorageService {
 
         this.watchers = [];
 
-        this.startWatching();
+        this.watchInterval = this.startWatching();
+
+        ipcRenderer.on('clear-and-backup', () => {
+            $interval.cancel(this.watchInterval);
+        });
+
+        ipcRenderer.on('storage-stop', () => {
+            console.log('stopping');
+            $interval.cancel(this.watchInterval);
+        })
     }
 
     checkStorageFile() {
@@ -25,7 +35,7 @@ export class StorageService {
     }
 
     startWatching() {
-        this.$interval(() => {
+        return this.$interval(() => {
             this.updateAll();
         }, 2000);
     }
