@@ -1,14 +1,21 @@
 import hummus from 'hummus';
-import {PDFService} from '../../../back/PDFService';
+import {
+    PDFService
+} from '../../../back/PDFService';
 let fs = require('fs');
 let jsPDF = require('jsPDF');
 let moment = require('moment');
 
 class DoneController {
-    constructor($stateParams, StorageService) {
+    constructor($stateParams, StorageService, $scope, SpinnerService) {
+        this.$scope = $scope;
+        this.SpinnerService = SpinnerService;
+
         this.layout = $stateParams.layout;
         this.pdfService = new PDFService();
-        this.readerCache = {};
+        this.unhandledDrugs = [];
+
+        this.pdfWorkerCache = {};
 
         StorageService.watch(this, 'done', () => {
             return {
@@ -21,14 +28,38 @@ class DoneController {
         });
 
         PDFLog.findAll({
-            include: [WasteLog]
-        })
-            .then(logs => {
-                return this.pdfLogs = logs;
+                include: [WasteLog]
             })
             .then(logs => {
-                this.writeLogs()
-            });
+                this.pdfLogs = logs.filter(log => !log.problematic && log.waste_log);
+
+                this.findUnhandledDrugs();
+            })
+    }
+
+    saveFile(path, name) {
+        let a = document.createElement('a');
+        a.href = path;
+        a.download = name;
+        a.click();
+    }
+
+    findUnhandledDrugs() {
+        this.pdfLogs.forEach(log => {
+            let waste = log.waste_log;
+
+            if (waste && !waste.vial && this.unhandledDrugs.indexOf(waste.charge_code_descriptor) == -1) {
+                this.unhandledDrugs.push(waste.charge_code_descriptor);
+            }
+        });
+
+        this.$scope.$apply();
+    }
+
+    process() {
+        this.SpinnerService.show();
+
+        this.writeLogs()
     }
 
     readerForFile(file) {
@@ -37,6 +68,71 @@ class DoneController {
         }
 
         return this.readerCache[file];
+    }
+
+    appendSpaces(string, length) {
+        return this.appendChars(' ', string, length);
+    }
+
+    appendChars(char, string, length) {
+        for(var i = 0; i < length; i++) {
+            string = string + char;
+        }
+
+        return string;
+    }
+
+    padNumber(num, length) {
+        return this.padNumberWith('0', num, length, false);
+    }
+
+    padNumberAfter(num, length) {
+        return this.padNumberWith('0', num, length, true);
+    }
+
+    padNumberWith(char, num, length, after = false) {
+        let string = num.toString();
+        let extra = this.appendChars(char, "", length - string.length);
+
+        if(after)
+            return string + extra;
+
+        return extra + string;
+    }
+
+    getDecimalOfNumber(num) {
+        return parseInt((num - parseInt(num)) * 100);
+    }
+
+    cobolFormat(intLength, decLength, num) {
+        let int = parseInt(num);
+        let dec = this.getDecimalOfNumber(num);
+
+        return this.padNumber(int, intLength) + this.padNumber(dec, 2);
+    }
+
+    writeBatchFile(logs) {
+        let filePath = appRoot + '/files/' + guid() + '.txt';
+        logs.forEach(log => {
+            let waste = log.waste_log;
+            console.log(waste.wasted_units);
+
+            var line = this.appendSpaces("1", 14);
+            line += this.padNumber(waste.patient_number, 7);
+            line = this.appendSpaces(line, 12);
+            line = line + waste.charge_code;
+            line = line + moment(waste.when).format('MMDDYY');
+            line = line + this.cobolFormat(5, 2, waste.rate);
+            line = line + this.cobolFormat(3, 2, waste.wasted_units);
+            line = line + "+"
+            line = this.appendSpaces(line, 34);
+            line = line + this.padNumberWith(' ', waste.account_number, 12);
+            line += " udjw";
+
+            fs.appendFileSync(filePath, line + '\r\n', 'utf-8');
+        });
+
+        return filePath;
     }
 
     writeCSV(logs) {
@@ -67,7 +163,7 @@ class DoneController {
             });
 
             console.log('Bad: ' + badCount);
-            resolve();
+            resolve(fileName);
         });
     }
 
@@ -95,37 +191,77 @@ class DoneController {
         pdf.addImage(imageData, 'JPEG', 0, 0);
     }
 
-    writeLogs() {
-        let wholePDF = new jsPDF();
-        let finishedCount = 1;
-        let addedPage = false;
-        this.pdfLogs.forEach(log => {
-            PDFJS.getDocument(log.file).then(pdf => {
-                pdf.getPage(log.page).then(page => {
-                    let canvas = document.createElement('canvas');
-                    canvas.width = 800;
-                    canvas.height = 1200;
-                    this.pdfService.renderToElement(page, canvas).then(context => {
-                        let canvasContext = context.canvasContext;
-                        this.writeToLog(log, canvas, context, addedPage ? wholePDF.addPage() : wholePDF);
+    writePage(log, page, wholePDF, addedPage) {
+        console.log(addedPage);
+        let canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 1200;
 
-                        if (!addedPage) {
-                            addedPage = true
-                        }
+        return new Promise((resolve, reject) => {
+            this.pdfService.renderToElement(page, canvas).then(context => {
+                let canvasContext = context.canvasContext;
+                this.writeToLog(log, canvas, context, addedPage ? wholePDF.addPage() : wholePDF);
 
-                        finishedCount++;
-
-                        console.log("Finished " + finishedCount)
-
-                        if(finishedCount == this.pdfLogs.length) {
-                            this.writeCSV(this.pdfLogs).then(() => {
-                                wholePDF.save(appRoot + '/files/done.pdf');
-                            });
-                        }
-                    });
-                });
+                resolve();
             });
         });
+    }
+
+    writeLogs() {
+        let wholePDF = new jsPDF();
+        let addedPage = false;
+        let finishedCount = 1;
+        let logMap = {};
+
+        this.pdfLogs.forEach(log => {
+            let file = log.file;
+            let logsWithThisFile = this.pdfLogs.filter(log => log.file == file);
+            logMap[file] = logsWithThisFile;
+        });
+
+        var promise = Promise.resolve()
+
+        for (var file in logMap) {
+            promise = promise.then(() => {
+                return new Promise((resolve, reject) => {
+                    let logs = logMap[file];
+
+                    PDFJS.getDocument(file).then(pdf => {
+                        let logPromises = [];
+                        logs.forEach(log => {
+                            logPromises.push(new Promise((logResolve) => {
+                                pdf.getPage(log.page).then(page => {
+                                    this.writePage(log, page, wholePDF, addedPage)
+                                        .then(() => {
+                                            logResolve();
+                                        });
+
+                                    addedPage = true;
+                                })
+                            }));
+                        });
+
+                        Promise.all(logPromises).then(() => {
+                            console.log('finished whole file : ' + file);
+                            pdf.destroy();
+                            resolve();
+                        });
+                    })
+                })
+            });
+        }
+
+        promise.then(() => {
+            this.SpinnerService.hide();
+            wholePDF.save();
+
+            this.writeCSV(this.pdfLogs)
+                .then(path => {
+                    this.saveFile(path, 'Waste Records.csv');
+                });
+
+            this.saveFile(this.writeBatchFile(this.pdfLogs), 'Batch File.txt');
+        })
     }
 }
 

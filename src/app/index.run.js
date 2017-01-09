@@ -20,7 +20,7 @@ angular.module('app.run', [])
             let index = states.indexOf($state.current.name);
 
 			if($state.current.name == "vial-config") {
-				$state.go(last);
+				$state.go(last || 'home');
 				return;
 			}
 

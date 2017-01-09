@@ -3,8 +3,9 @@ import {
 } from '../../../back/ExcelService';
 
 class WasteUploadController {
-    constructor($scope, StorageService, DB_FIELD_MAP, $state) {
+    constructor($scope, StorageService, DB_FIELD_MAP, $state, SpinnerService) {
         this.$state = $state;
+        this.SpinnerService = SpinnerService;
 
         StorageService.watch(this, 'waste_upload', () => {
             return {
@@ -51,6 +52,7 @@ class WasteUploadController {
         this.excelService.saveData()
             .then(() => {
                 this.onExcelReady();
+                this.SpinnerService.hide();
             });
     }
 
@@ -63,6 +65,7 @@ class WasteUploadController {
 
         //Otherwise process
         this.excelService.process(this.columns).then(() => {
+            delete this.excelService.workbook;
             this.$state.go('pdf-upload');
         });
     }
@@ -75,6 +78,8 @@ class WasteUploadController {
         };
 
         angular.element(document.querySelector('#fakeInput')).bind('change', event => {
+            this.SpinnerService.show();
+
             this.fileReader.readAsDataURL(event.target.files[0]);
         });
     }

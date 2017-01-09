@@ -8,6 +8,7 @@ import {PDFLayoutComponent} from './components/PDFLayout/PDFLayout';
 import {PDFFillerComponent} from './components/PDFFiller/PDFFiller';
 import {VialConfigComponent} from './components/VialConfig/VialConfig';
 import {DoneComponent} from './components/Done/Done';
+import {SpinnerComponent} from './components/Spinner/Spinner';
 
 angular.module('app.components', [])
     .component('home', HomeComponent)
@@ -17,4 +18,5 @@ angular.module('app.components', [])
     .component('pdfLayout', PDFLayoutComponent)
     .component('pdfFiller', PDFFillerComponent)
     .component('vialConfig', VialConfigComponent)
-    .component('done', DoneComponent);
+    .component('done', DoneComponent)
+    .component('spinner', SpinnerComponent);

@@ -1,2 +1,17 @@
+<div class="row center-xs">
+
+    <table>
+        <thead>
+        <th>Missed Drugs (Add these to your Vial Configuration)</th>
+        </thead>
+        <tbody>
+        <tr ng-repeat="drug in done.unhandledDrugs">
+            <td>{{ drug }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <button class="button" ng-click="done.process()">Process</button>
+</div>
 <canvas id="canvas" width="600" height="1000"></canvas>
 <img ng-src="{{ done.image }}" alt="">

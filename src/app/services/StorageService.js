@@ -3,12 +3,25 @@ import fs from 'fs';
 export class StorageService {
     constructor($rootScope, $interval) {
         this.$rootScope = $rootScope;
-        this.data = JSON.parse(fs.readFileSync(appRoot + '/files/storage.json', 'utf8'));
+        this.filePath = appRoot + '/files/storage.json';
         this.$interval = $interval;
+
+        this.checkStorageFile();
+        this.readStorageFile();
 
         this.watchers = [];
 
         this.startWatching();
+    }
+
+    checkStorageFile() {
+        if(!fs.existsSync(this.filePath)) {
+            fs.appendFileSync(this.filePath, '{}', 'utf-8');
+        }
+    }
+
+    readStorageFile() {
+        this.data = JSON.parse(fs.readFileSync(this.filePath));
     }
 
     startWatching() {

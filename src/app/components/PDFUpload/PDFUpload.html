@@ -15,6 +15,7 @@
 
 	<div class="row around-xs">
 		<button ng-click="pdf.selectFiles()">Select Files</button>
+		<button class="button button-outline" ng-click="pdf.resetFiles()">Reset Files</button>
 		<button class="button button-outline" ng-disabled="!pdf.pdfsReady" ng-click="pdf.next()">Next</button>
 	</div>
 

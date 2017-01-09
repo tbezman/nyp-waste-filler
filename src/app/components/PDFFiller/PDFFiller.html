@@ -62,7 +62,7 @@
         </div>
     </div>
     <div class="row top-room">
-        <div class="row col-xs-5">
+        <div class="row col-xs-6">
             <div class="row center-xs middle-xs space around">
                 <h5 class="col-xs-3"
                     ng-class="{done: filler.currentPage().waste_log, incomplete: !filler.currentPage().waste_log, problematic: filler.currentPage().problematic}">
@@ -74,9 +74,8 @@
                 </h5>
             </div>
             <div class="row space around">
-                <button class="button col-xs-4" ng-class="{'button-outline': !filler.filterDone}" ng-click="filler.toggleDone()">Filter Done</button>
-                <button class="button button-outline col-xs-4" ng-click="filler.setAsProblem()">Problem</button>
-                <button class="button button-outline col-xs-4" ng-click="filler.nextIncomplete()">Next Incomplete
+                <button class="button button-outline col-xs-3" ng-click="filler.setAsProblem()">Problem</button>
+                <button class="button button-outline col-xs-3" ng-click="filler.nextIncomplete()">Next Incomplete
                 </button>
             </div>
         </div>

@@ -70,9 +70,15 @@ export class VialService {
                 verbose.push(vialSize);
         });
 
+        var allCombos = null;
+
+        if(vialSizes.length == 1) {
+            allCombos = [verbose];
+        } else allCombos = this.combinations(verbose);
+
         let wastes = [];
 
-        let combinations = this.combinations(verbose).filter(combination => {
+        let combinations = allCombos.filter(combination => {
             let sum = combination.reduce((a, b) => a + b, 0);
 
             if (sum >= billed)

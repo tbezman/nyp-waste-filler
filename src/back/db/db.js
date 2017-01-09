@@ -12,7 +12,7 @@ export const db = () => {
         },
 
         // SQLite only
-        storage: 'db.sqlite'
+        storage: appRoot + '/db.sqlite'
     });
 
     global.WasteLog = sequelize.define('waste_log', {
@@ -62,7 +62,8 @@ export const db = () => {
             charged_waste: function() {
                 if(!this.vial) return null;
 
-                console.log(this.smallest_vial_size, this.wasted_amount, this.bestConfig.waste);
+                // if this.pdf.only_patient -- return this.wasted_amount;
+
                 return Math.min(this.smallest_vial_size, this.wasted_amount, this.bestConfig.waste);
             },
             wasted_units: function() {

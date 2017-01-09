@@ -12,6 +12,26 @@ body {
     font-family: sans-serif;
 }
 
+spinner {
+    text-align: center;
+    z-index: 999;
+}
+
+spinner > svg {
+    top: 50%;
+    left: 50vw;
+    transform: translateY(-50%) translateX(-50%);
+    position: relative;
+}
+
+spinner > .background {
+    background-color: rgba(238, 238, 238, 0.67);
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+}
+
 .done {
     color: green;
 }

@@ -241,6 +241,7 @@ class PDFFillerController {
 
                             logs.forEach(log => {
                                 if (log.file == file && log.page == i) {
+                                    console.log('found one');
                                     page.done = true;
                                     page.waste_log = log.waste_log;
                                     page.problematic = log.problematic;

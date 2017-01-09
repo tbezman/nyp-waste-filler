@@ -16,7 +16,6 @@ export class PDFService {
     }
 
 
-
     renderToElement(page, selector, textDelegate, initLayout) {
         let element = typeof(selector) == 'string' ? document.querySelector(selector) : selector;
         let context = element.getContext('2d');
@@ -54,6 +53,10 @@ export class PDFService {
                 }
             })
         });
+    }
+
+    resetFiles() {
+        this.files = [];
     }
 
     splitUp() {

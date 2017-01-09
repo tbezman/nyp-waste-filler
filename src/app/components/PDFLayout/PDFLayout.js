@@ -97,6 +97,11 @@ class PDFLayoutController {
         this.$state.go('pdf-filler', {layout: this.layout, files: this.pdfService.files});
     }
 
+    reset() {
+        this.layout = {};
+        this.$onInit();
+    }
+
     $onInit() {
         this.currentFile = this.pdfService.files[0];
         this.page = 2;
