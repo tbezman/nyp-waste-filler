@@ -39,7 +39,8 @@ app.on('ready', function () {
 
     global.mainWindow = createWindow('main', {
         width: 1280,
-        height: 720
+        height: 720,
+        titleBarStyle: 'hidden-inset'
     });
 
     mainWindow.loadURL(url.format({
