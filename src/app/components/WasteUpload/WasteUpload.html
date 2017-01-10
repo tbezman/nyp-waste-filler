@@ -27,8 +27,8 @@
 	</div>
 
 	<div class="row around-xs">
-		<button ng-click="waste.selectFiles()">Select Files</button>
-		<button class="button button-outline" ng-disabled="!waste.isReady()" ng-click="waste.next()">Next</button>
+		<button ng-click="waste.selectFiles()" ng-class="{'invisible': waste.excelReady}">Select Files</button>
+		<button class="button" ng-class="{'button-outline': !waste.excelReady}" ng-disabled="!waste.isReady()" ng-click="waste.next()">Next</button>
 	</div>
 
 </div>

@@ -16,17 +16,23 @@ export const dataMenuTemplate = {
 			}
 		},
 		{
-			label: 'Clear Data',
+			label: 'Clear Data & Backup',
 			accelerator: 'CmdOrCtrl+D',
+			click: () => {
+				mainWindow.webContents.send('clear-and-backup');
+			}
+		},
+		{
+			label: 'Clear Data',
 			click: () => {
 				dialog.showMessageBox(null, {
 					title: "Confirm",
 					type: 'question',
-					message: 'Are you sure you want to delete your data?\nWe will create a backup anyway.',
+					message: 'Are you sure you want to delete your data?',
 					buttons: ['Yes', 'No']
 				}, response => {
 					if (response == 0) {
-						mainWindow.webContents.send('clear-and-backup');
+						mainWindow.webContents.send('clear');
 					}
 				});
 			}

@@ -23,8 +23,19 @@ ipcRenderer.on('clear-and-backup', () => {
 			location.reload();
 		})	
 	});
-
 })
+
+ipcRenderer.on('clear', () => {
+	let exportService = new ExportService();
+	exportService.files().then(files => {
+		files.forEach(file => {
+			fs.unlinkSync(file);
+		});	
+
+		location.href = "/";
+		location.reload();
+	})	
+});
 
 ipcRenderer.on('reset-window', () => {
 	location.href = "/";
