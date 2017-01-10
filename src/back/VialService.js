@@ -115,6 +115,17 @@ export class VialService {
     }
 
     vialForDrug(drug) {
+        if(global.drugMap) {
+            var foundDrug = null;
+            global.drugMap.filter(mapped => mapped.mapped)
+                .forEach(mappedDrug => {
+                    if(mappedDrug.drug == drug) foundDrug = mappedDrug.mapped;
+                })
+            if(foundDrug) {
+                return foundDrug;
+            }
+        }
+
         drug = drug.toLowerCase();
 
         for(var key in this.vials) {

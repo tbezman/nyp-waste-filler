@@ -15,11 +15,11 @@ ipcRenderer.on('clear-and-backup', () => {
 	let exportService = new ExportService();
 	exportService.backup().then(() => {
 		exportService.files().then(files => {
-			console.log('unlinkin');
 			files.forEach(file => {
 				fs.unlinkSync(file);
 			});	
 
+			location.href = "/";
 			location.reload();
 		})	
 	});

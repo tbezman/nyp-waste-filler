@@ -1,6 +1,7 @@
-import hummus from 'hummus';
 import {PDFService} from '../../../back/PDFService';
+import {BatchService} from '../../../back/BatchService';
 import {ExportService} from '../../../back/ExportService';
+import {VialService} from '../../../back/VialService';
 let fs = require('fs');
 let jsPDF = require('jsPDF');
 let moment = require('moment');
@@ -26,22 +27,30 @@ class DoneController {
             }
         });
 
-        PDFLog.findAll({
-                include: [WasteLog]
-            })
-            .then(logs => {
-                this.pdfLogs = logs.filter(log => !log.problematic && log.waste_log);
+        this.initVials();
 
+        PDFLog.readyLogs()
+            .then(logs => {
                 this.findUnhandledDrugs();
             })
+    }
+
+    initVials() {
+        let vialService = new VialService();
+        this.vials = vialService.vials;
     }
 
     findUnhandledDrugs() {
         this.pdfLogs.forEach(log => {
             let waste = log.waste_log;
 
-            if (waste && !waste.vial && this.unhandledDrugs.indexOf(waste.charge_code_descriptor) == -1) {
-                this.unhandledDrugs.push(waste.charge_code_descriptor);
+            var found = false;
+            this.unhandledDrugs.forEach(drug => {
+                if (drug.drug == waste.charge_code_descriptor) found = true;
+            });
+
+            if (waste && !waste.vial && !found) {
+                this.unhandledDrugs.push({drug: waste.charge_code_descriptor});
             }
         });
 
@@ -51,7 +60,13 @@ class DoneController {
     process() {
         this.SpinnerService.show();
 
+        this.handleDrugMap();
+
         this.writeLogs()
+    }
+
+    handleDrugMap() {
+        global.drugMap = this.unhandledDrugs;
     }
 
     backup() {
@@ -59,77 +74,9 @@ class DoneController {
         exportService.backup();
     }
 
-    readerForFile(file) {
-        if (!this.readerCache.hasOwnProperty(file)) {
-            this.readerCache[file] = hummus.createReader(file);
-        }
-
-        return this.readerCache[file];
-    }
-
-    appendSpaces(string, length) {
-        return this.appendChars(' ', string, length);
-    }
-
-    appendChars(char, string, length) {
-        for(var i = 0; i < length; i++) {
-            string = string + char;
-        }
-
-        return string;
-    }
-
-    padNumber(num, length) {
-        return this.padNumberWith('0', num, length, false);
-    }
-
-    padNumberAfter(num, length) {
-        return this.padNumberWith('0', num, length, true);
-    }
-
-    padNumberWith(char, num, length, after = false) {
-        let string = num.toString();
-        let extra = this.appendChars(char, "", length - string.length);
-
-        if(after)
-            return string + extra;
-
-        return extra + string;
-    }
-
-    getDecimalOfNumber(num) {
-        return parseInt((num - parseInt(num)) * 100);
-    }
-
-    cobolFormat(intLength, decLength, num) {
-        let int = parseInt(num);
-        let dec = this.getDecimalOfNumber(num);
-
-        return this.padNumber(int, intLength) + this.padNumber(dec, 2);
-    }
-
-    writeBatchFile(logs) {
-        let filePath = appRoot + '/files/' + guid() + '.txt';
-        logs.forEach(log => {
-            let waste = log.waste_log;
-            console.log(waste.wasted_units);
-
-            var line = this.appendSpaces("1", 14);
-            line += this.padNumber(waste.patient_number, 7);
-            line = this.appendSpaces(line, 12);
-            line = line + waste.charge_code;
-            line = line + moment(waste.when).format('MMDDYY');
-            line = line + this.cobolFormat(5, 2, waste.rate);
-            line = line + this.cobolFormat(3, 2, waste.wasted_units);
-            line = line + "+"
-            line = this.appendSpaces(line, 34);
-            line = line + this.padNumberWith(' ', waste.account_number, 12);
-            line += " udjw";
-
-            fs.appendFileSync(filePath, line + '\r\n', 'utf-8');
-        });
-
-        return filePath;
+    writeBatchFile() {
+        let batchService = new BatchService(this.pdfLogs);
+        return batchService.save('west');
     }
 
     writeCSV(logs) {
@@ -159,7 +106,6 @@ class DoneController {
                 }
             });
 
-            console.log('Bad: ' + badCount);
             resolve(fileName);
         });
     }
@@ -257,7 +203,7 @@ class DoneController {
                     saveFile(path, 'Waste Records.csv');
                 });
 
-            saveFile(this.writeBatchFile(this.pdfLogs), 'Batch File.txt');
+            saveFile(this.writeBatchFile(), 'Batch File.txt');
         })
     }
 }
