@@ -31,6 +31,7 @@ class DoneController {
 
         PDFLog.readyLogs()
             .then(logs => {
+                this.pdfLogs = logs;
                 this.findUnhandledDrugs();
             })
     }
@@ -74,9 +75,9 @@ class DoneController {
         exportService.backup();
     }
 
-    writeBatchFile() {
+    writeBatchFile(campus) {
         let batchService = new BatchService(this.pdfLogs);
-        return batchService.save('west');
+        return batchService.save(campus);
     }
 
     writeCSV(logs) {
@@ -203,7 +204,8 @@ class DoneController {
                     saveFile(path, 'Waste Records.csv');
                 });
 
-            saveFile(this.writeBatchFile(), 'Batch File.txt');
+            saveFile(this.writeBatchFile('east'), 'East Batch File.txt');
+            saveFile(this.writeBatchFile('west'), 'West Batch File.txt');
         })
     }
 }

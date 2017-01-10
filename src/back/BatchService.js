@@ -25,8 +25,31 @@ export class BatchService {
 		return line;
 	}
 
+	eastLine(log, index) {
+		let waste = log.waste_log;
+		var line = this.padNumber((index + 1) + "", 7);
+
+		line += moment().format('YYMMDD').toString();
+		line += moment().format('HHmmss').toString();
+		line += "INIT  "; //Default
+		line += 'HCHG01NY';
+		line += "           ";
+		line = line + this.padNumberWith(' ', waste.patient_number, 15);
+		line += 'A';
+		line += this.padNumberWith(' ', waste.account_number, 8);
+		line = this.appendSpaces(line, 6);
+		line += moment(waste.when).format('MM/DD/YY');
+		line += this.padNumber(waste.charge_code, 8);
+		line += this.decimalFormat(5, 2, waste.rate) + " ";
+		line += this.decimalFormat(3, 2, waste.units) + ' ';
+		line += 'HO';
+		line += 'HCPCS:      M1:UD M2:JW M3:   M4:   NDC:           ';
+
+		return line;
+	}
+
 	data(campus) {
-		return this.logs.map(log => this[campus + 'Line'](log)).join('\r\n');
+		return this.logs.map((log, index) => this[campus + 'Line'](log, index)).join('\r\n');
 	}
 
 	save(campus) {
@@ -70,6 +93,13 @@ export class BatchService {
 
 	getDecimalOfNumber(num) {
 		return parseInt((num - parseInt(num)) * 100);
+	}
+
+	decimalFormat(intLength, decLength, num) {
+		let int = parseInt(num);
+		let dec = this.getDecimalOfNumber(num);
+
+		return (this.padNumber(int, intLength) + "." + this.padNumber(dec, 2)).toString();
 	}
 
 	cobolFormat(intLength, decLength, num) {
