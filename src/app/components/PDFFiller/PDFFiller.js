@@ -193,6 +193,7 @@ class PDFFillerController {
 
     search() {
         let wheres = [];
+        this.SpinnerService.show();
 
         if (this.searchDrug) {
             wheres.push({
@@ -214,6 +215,8 @@ class PDFFillerController {
 
                 return moment(this.searchDate).startOf('day').isSame(moment(log.dataValues.when).startOf('day'));
             });
+
+            this.SpinnerService.hide();
         });
     }
 
