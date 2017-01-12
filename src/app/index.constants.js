@@ -11,6 +11,9 @@ global.DB_FIELD_MAP = {
     'time': 'Time'
 };
 
+global.CAMPUS_FILE_LOCATION = '/files/campus.json';
+global.CAMPUSES = ['east', 'west'];
+
 global.DRAWABLE_MAP = Object.assign(angular.copy(DB_FIELD_MAP), {
     'charge': "Charge",
     'vial_config': 'Vial Config',

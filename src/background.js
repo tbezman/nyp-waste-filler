@@ -79,3 +79,7 @@ if(!fs.existsSync(appRoot + '/vials.json')) {
 if(!fs.existsSync(appRoot + '/db.sqlite')) {
     fs.writeFileSync(appRoot + '/db.sqlite', '', 'utf-8');
 }
+
+if(!fs.existsSync(appRoot + '/files/campus.json')) {
+    fs.writeFileSync(appRoot + '/files/campus.json', JSON.stringify({campus: 'west'}), 'utf-8');
+}

@@ -1,7 +1,13 @@
 class HomeController {
+	constructor(CampusService, $scope) {
+		this.CampusService = CampusService;	
+		this.CampusService.read().then(() => {
+			$scope.$apply();
+		});
+	}
 
-	$onInit() {
-		this.hello = "world";
+	campusChange() {
+		this.CampusService.campus = this.campus;
 	}
 }
 

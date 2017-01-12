@@ -6,7 +6,8 @@ export class ImportService {
 	constructor() {
 		this.fileDestination = {
 			'db.sqlite': '/',
-			'storage.json': '/files/'
+			'storage.json': '/files/',
+			'campus.json': '/files/'
 		}
 	}
 
