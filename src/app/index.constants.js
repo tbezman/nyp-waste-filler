@@ -1,7 +1,8 @@
 let angular = require('angular');
 
 global.DB_FIELD_MAP = {
-    'patient_number': 'MRN',
+    'patient_number': 'Patient Number',
+    'mrn': 'MRN',
     'account_number': 'Account Number',
     'charge_code': 'Charge Code',
     'charge_code_descriptor': 'Charge Code Descriptor',
@@ -14,6 +15,11 @@ global.DB_FIELD_MAP = {
 global.CAMPUS_FILE_LOCATION = '/files/campus.json';
 global.CAMPUSES = ['east', 'west'];
 
+global.CAMPUS_IGNORE_FIELDS = {
+    'east': [],
+    'west': ['patient_number']
+}
+
 global.DRAWABLE_MAP = Object.assign(angular.copy(DB_FIELD_MAP), {
     'charge': "Charge",
     'vial_config': 'Vial Config',
@@ -21,7 +27,7 @@ global.DRAWABLE_MAP = Object.assign(angular.copy(DB_FIELD_MAP), {
 });
 
 global.PREFIX_MAP = {
-    'patient_number': 'MRN: ',
+    'mrn': 'MRN: ',
     'account_number': 'ACCT: ',
     'vial_config': 'Vial Config: '
 };

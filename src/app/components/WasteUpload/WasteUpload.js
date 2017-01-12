@@ -3,9 +3,10 @@ import {
 } from '../../../back/ExcelService';
 
 class WasteUploadController {
-    constructor($scope, StorageService, DB_FIELD_MAP, $state, SpinnerService) {
+    constructor($scope, StorageService, DB_FIELD_MAP, $state, SpinnerService, CampusService) {
         this.$state = $state;
         this.SpinnerService = SpinnerService;
+        this.CampusService = CampusService;
 
         StorageService.watch(this, 'waste_upload', () => {
             return {
@@ -24,7 +25,11 @@ class WasteUploadController {
 
         this.$scope = $scope;
 
-        this.dbColumns = DB_FIELD_MAP;
+        this.dbColumns = {};
+        let fields = CAMPUS_IGNORE_FIELDS[this.CampusService.campus];
+        for(var key in DB_FIELD_MAP) {
+            if(fields.indexOf(key) == -1) this.dbColumns[key] = DB_FIELD_MAP[key];
+        }
     }
 
     selectFiles() {

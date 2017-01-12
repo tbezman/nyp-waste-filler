@@ -22,6 +22,9 @@ export const db = () => {
         patient_number: {
             type: Sequelize.STRING
         },
+        mrn: {
+            type: Sequelize.STRING,
+        },
         charge_code: {
             type: Sequelize.STRING
         },

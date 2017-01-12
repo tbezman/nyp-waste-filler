@@ -3,6 +3,8 @@ import fs from 'fs';
 export class CampusService {
 	constructor() {
 		this.campuses = CAMPUSES;
+
+		this.read().then();
 	}
 
 	get campus() {

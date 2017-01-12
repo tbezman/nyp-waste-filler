@@ -11,7 +11,7 @@ export class BatchService {
 		let waste = log.waste_log;
 		var line = this.appendSpaces("1", 14);
 
-		line += this.padNumber(waste.patient_number, 7);
+		line += this.padNumber(waste.mrn, 7);
 		line = this.appendSpaces(line, 12);
 		line = line + waste.charge_code;
 		line = line + moment(waste.when).format('MMDDYY');
@@ -34,7 +34,7 @@ export class BatchService {
 		line += "INIT  "; //Default
 		line += 'HCHG01NY';
 		line += "           ";
-		line = line + this.padNumberWith(' ', waste.patient_number, 15);
+		line = line + this.padNumberWith(' ', waste.mrn, 15);
 		line += 'A';
 		line += this.padNumberWith(' ', waste.account_number, 8);
 		line = this.appendSpaces(line, 6);
