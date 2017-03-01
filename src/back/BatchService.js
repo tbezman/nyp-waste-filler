@@ -17,10 +17,10 @@ export class BatchService {
 		line = line + moment(waste.when).format('MMDDYY');
 		line = line + this.cobolFormat(5, 2, waste.rate);
 		line = line + this.cobolFormat(3, 2, waste.wasted_units);
-		line = line + "+"
+		line = line + "+";
 		line = this.appendSpaces(line, 34);
 		line = line + this.padNumberWith(' ', waste.account_number, 12);
-		line += " udjw";
+		line += " JW";
 
 		return line;
 	}
@@ -43,7 +43,7 @@ export class BatchService {
 		line += this.decimalFormat(5, 2, waste.rate) + " ";
 		line += this.decimalFormat(3, 2, waste.units) + ' ';
 		line += 'HO';
-		line += 'HCPCS:      M1:UD M2:JW M3:   M4:   NDC:           ';
+		line += 'HCPCS:      M1:   M2:JW M3:   M4:   NDC:           ';
 
 		return line;
 	}
