@@ -3,7 +3,7 @@ import {BatchService} from '../../../back/BatchService';
 import {ExportService} from '../../../back/ExportService';
 import {VialService} from '../../../back/VialService';
 let fs = require('fs');
-let jsPDF = require('jsPDF');
+let jsPDF = require('jspdf');
 let moment = require('moment');
 
 class DoneController {
