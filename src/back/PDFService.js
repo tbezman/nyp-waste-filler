@@ -1,5 +1,4 @@
 import fs from 'fs';
-import hummus from 'hummus';
 require('pdfjs-dist/build/pdf');
 require('pdfjs-dist/web/pdf_viewer'); // Only if you need `PDFJS.PDFViewer`
 // Webpack returns a string to the url because we configured the url-loader.
@@ -57,9 +56,5 @@ export class PDFService {
 
     resetFiles() {
         this.files = [];
-    }
-
-    splitUp() {
-        let writer = hummus.createWriter(appRoot + '/files/' + guid() + '.pdf');
     }
 }

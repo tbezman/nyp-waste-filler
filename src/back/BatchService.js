@@ -19,12 +19,10 @@ export class BatchService {
 		line = line + moment(waste.when).format('MMDDYY');
 		line = line + this.cobolFormat(5, 2, waste.rate);
 		line = line + this.cobolFormat(3, 2, waste.wasted_units);
-		line = line + "+"
-		line = this.appendSpaces(line, 9);
-		line += this.padNumberWith(' ', waste.vial.ndc, 13);
-		line = this.appendSpaces(line, 12);
+		line = line + "+";
+		line = this.appendSpaces(line, 34);
 		line = line + this.padNumberWith(' ', waste.account_number, 12);
-		line += "   jw";
+		line += " JW";
 
 		return line;
 	}
@@ -47,11 +45,15 @@ export class BatchService {
 		line += this.decimalFormat(5, 2, waste.rate) + " ";
 		line += this.decimalFormat(3, 2, waste.units) + ' ';
 		line += 'HO';
+<<<<<<< HEAD
 		line += 'HCPCS:      M1:   M2:JW M3:   M4:   NDC:' + this.padNumberWith(' ', waste.vial.ndc, 12, true);
 		line += "                         AI        W WS PP0001000300 S";
 		line = this.appendSpaces(line, 756 - line.length);
 
 		line = line.substr(0, 402) + 'AW' + line.substr(404);
+=======
+		line += 'HCPCS:      M1:   M2:JW M3:   M4:   NDC:           ';
+>>>>>>> b103dffb1171e3af7195d719f6ffd76cd8f0631d
 
 		return line;
 	}
