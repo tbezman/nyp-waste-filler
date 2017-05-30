@@ -53,7 +53,7 @@ global.saveFile = function(path, name) {
     a.href = path;
     a.download = name;
     a.click();
-}
+};
 
 global.guid = function() {
 	function s4() {

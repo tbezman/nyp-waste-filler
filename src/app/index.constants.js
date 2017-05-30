@@ -18,7 +18,7 @@ global.CAMPUSES = ['east', 'west'];
 global.CAMPUS_IGNORE_FIELDS = {
     'east': [],
     'west': ['patient_number']
-}
+};
 
 global.DRAWABLE_MAP = Object.assign(angular.copy(DB_FIELD_MAP), {
     'charge': "Charge",

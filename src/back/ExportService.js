@@ -4,7 +4,7 @@ import path from 'path';
 
 export class ExportService {
 	constructor() {
-		this.defaultFiles = [appRoot + '/db.sqlite', appRoot + '/files/storage.json', '/files/campus.json'];		
+		this.defaultFiles = [appRoot + '/db.sqlite', appRoot + '/files/storage.json', appRoot + '/files/campus.json'];		
 	}
 
 	files() {

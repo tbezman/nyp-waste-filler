@@ -7,9 +7,10 @@ let jsPDF = require('jsPDF');
 let moment = require('moment');
 
 class DoneController {
-    constructor($stateParams, StorageService, $scope, SpinnerService) {
+    constructor($stateParams, StorageService, $scope, SpinnerService, CampusService) {
         this.$scope = $scope;
         this.SpinnerService = SpinnerService;
+        this.CampusService = CampusService;
 
         this.layout = $stateParams.layout;
         this.pdfService = new PDFService();
@@ -20,7 +21,7 @@ class DoneController {
         StorageService.watch(this, 'done', () => {
             return {
                 layout: this.layout
-            }
+            };
         }, data => {
             if (!this.layout) {
                 this.layout = data.layout;
@@ -33,7 +34,7 @@ class DoneController {
             .then(logs => {
                 this.pdfLogs = logs;
                 this.findUnhandledDrugs();
-            })
+            });
     }
 
     initVials() {
@@ -76,7 +77,9 @@ class DoneController {
     }
 
     writeBatchFile(campus) {
+        console.log('up here');
         let batchService = new BatchService(this.pdfLogs);
+
         return batchService.save(campus);
     }
 
@@ -98,7 +101,7 @@ class DoneController {
 
                 if (wasteLog && !log.problematic) {
                     let line = moment(wasteLog.when).format('MM/DD/YYYY') + ',' + Object.keys(fields).map(key => {
-                        return wasteLog[key]
+                        return wasteLog[key];
                     }).join(',') + '\n';
 
                     fs.appendFileSync(fileName, line, 'utf-8');
@@ -136,7 +139,6 @@ class DoneController {
     }
 
     writePage(log, page, wholePDF, addedPage) {
-        console.log(addedPage);
         let canvas = document.createElement('canvas');
         canvas.width = 800;
         canvas.height = 1200;
@@ -163,9 +165,10 @@ class DoneController {
             logMap[file] = logsWithThisFile;
         });
 
-        var promise = Promise.resolve()
+        var promise = Promise.resolve();
 
         for (var file in logMap) {
+            console.log(file);
             promise = promise.then(() => {
                 return new Promise((resolve, reject) => {
                     let logs = logMap[file];
@@ -181,7 +184,7 @@ class DoneController {
                                         });
 
                                     addedPage = true;
-                                })
+                                });
                             }));
                         });
 
@@ -190,8 +193,8 @@ class DoneController {
                             pdf.destroy();
                             resolve();
                         });
-                    })
-                })
+                    });
+                });
             });
         }
 
@@ -204,9 +207,8 @@ class DoneController {
                     saveFile(path, 'Waste Records.csv');
                 });
 
-            saveFile(this.writeBatchFile('east'), 'East Batch File.txt');
-            saveFile(this.writeBatchFile('west'), 'West Batch File.txt');
-        })
+            saveFile(this.writeBatchFile(this.CampusService.campus), 'Batch File.txt');
+        });
     }
 }
 
@@ -217,4 +219,4 @@ export const DoneComponent = {
 
     controller: DoneController,
     controllerAs: 'done'
-}
+};

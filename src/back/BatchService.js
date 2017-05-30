@@ -2,7 +2,9 @@ import moment from 'moment';
 import fs from 'fs';
 export class BatchService {
 	constructor(logs) {
+		console.log('in const');
 		this.logs = logs.filter(log => {
+			return !!log.waste_log.vial;
 			return log.waste_log.wasted_units > 0;
 		});
 	}
@@ -18,9 +20,11 @@ export class BatchService {
 		line = line + this.cobolFormat(5, 2, waste.rate);
 		line = line + this.cobolFormat(3, 2, waste.wasted_units);
 		line = line + "+"
-		line = this.appendSpaces(line, 34);
+		line = this.appendSpaces(line, 9);
+		line += this.padNumberWith(' ', waste.vial.ndc, 13);
+		line = this.appendSpaces(line, 12);
 		line = line + this.padNumberWith(' ', waste.account_number, 12);
-		line += " udjw";
+		line += "   jw";
 
 		return line;
 	}
@@ -32,18 +36,22 @@ export class BatchService {
 		line += moment().format('YYMMDD').toString();
 		line += moment().format('HHmmss').toString();
 		line += "INIT  "; //Default
-		line += 'HCHG01NY';
-		line += "           ";
-		line = line + this.padNumberWith(' ', waste.patient_number, 15);
-		line += 'A';
-		line += this.padNumberWith(' ', waste.account_number, 8);
+		line += 'HCHG01NYA';
+		line = this.appendSpaces(line, 11);
+		line = line + this.padNumberWith(' ', waste.patient_number, 15, true);
+		line += "O";
+		line += this.padNumberWith(' ', waste.account_number, 9, true);
 		line = this.appendSpaces(line, 6);
 		line += moment(waste.when).format('MM/DD/YY');
 		line += this.padNumber(waste.charge_code, 8);
 		line += this.decimalFormat(5, 2, waste.rate) + " ";
 		line += this.decimalFormat(3, 2, waste.units) + ' ';
 		line += 'HO';
-		line += 'HCPCS:      M1:UD M2:JW M3:   M4:   NDC:           ';
+		line += 'HCPCS:      M1:   M2:JW M3:   M4:   NDC:' + this.padNumberWith(' ', waste.vial.ndc, 12, true);
+		line += "                         AI        W WS PP0001000300 S";
+		line = this.appendSpaces(line, 756 - line.length);
+
+		line = line.substr(0, 402) + 'AW' + line.substr(404);
 
 		return line;
 	}
@@ -53,8 +61,11 @@ export class BatchService {
 	}
 
 	save(campus) {
+		console.log('in save');
 		let data = this.data(campus);
+		console.log(data);
 		let filePath = appRoot + '/files/' + guid() + '.txt';
+		console.log(filePath);
 
 		fs.appendFileSync(filePath, data, 'utf-8');
 
@@ -81,7 +92,7 @@ export class BatchService {
 		return this.padNumberWith('0', num, length, true);
 	}
 
-	padNumberWith(char, num, length, after = false) {
+	padNumberWith(char, num, length, after) {
 		let string = num.toString();
 		let extra = this.appendChars(char, "", length - string.length);
 

@@ -70,11 +70,12 @@ export const db = () => {
                 return Math.min(this.smallest_vial_size, this.wasted_amount, this.bestConfig.waste);
             },
             wasted_units: function() {
-                if(!this.vial) return 0.0;
+                if(!this.vial) return 0;
 
                 return this.charged_waste / this.vial.billable_units;
             },
             entered_waste: function () {
+                if(!this.wasted_amount) return "";
                 console.log('waste:' + this.wasted_amount);
                 return this.wasted_amount.toString();
             },

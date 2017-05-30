@@ -171,6 +171,18 @@ class PDFFillerController {
     updatePage() {
         let page = this.currentPage();
         this.setPage(page.file, page.page);
+
+        this.checkDone();
+    }
+
+    checkDone() {
+        let complete = this.pages.filter(page => {
+            return page.problematic || page.waste_log;
+        }).length;
+
+        if(complete == this.pages.length) {
+            console.log('all done');
+        }
     }
 
     updateFilters() {
