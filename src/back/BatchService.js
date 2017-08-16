@@ -3,11 +3,10 @@ import fs from 'fs';
 export class BatchService {
     constructor(logs) {
         console.log('in const');
-        this.logs = logs.filter(log = > {
-                return !!log.waste_log.vial;
-        return log.waste_log.wasted_units > 0;
-    })
-        ;
+        this.logs = logs.filter(log => {
+            return !!log.waste_log.vial;
+            return log.waste_log.wasted_units > 0;
+        });
     }
 
     westLine(log) {
@@ -56,9 +55,8 @@ export class BatchService {
     }
 
     data(campus) {
-        return this.logs.map((log, index) = > this[campus + 'Line'](log, index)
-    ).
-        join('\r\n');
+        return this.logs.map((log, index) => this[campus + 'Line'](log, index)
+        ).join('\r\n');
     }
 
     save(campus) {

@@ -1,8 +1,11 @@
 import angular from 'angular';
 
-export default angular.module('app', ['app.components', 'app.config', 'app.services', 'app.run', 'app.constants', require('angular-ui-router'), require('angular-animate')]);
+import 'ng-mask';
+
+export default angular.module('app', ['app.components', 'app.config', 'app.services', 'app.run', 'app.constants', 'app.directives', require('angular-ui-router'), require('angular-animate'), 'ngMask']);
 
 import './index.components';
+import './index.directives';
 import './index.services';
 import './index.config';
 import './index.run';

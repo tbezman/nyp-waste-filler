@@ -76,7 +76,7 @@ export const db = () => {
             },
             entered_waste: function () {
                 if(!this.wasted_amount) return "";
-                console.log('waste:' + this.wasted_amount);
+                // console.log('waste:' + this.wasted_amount);
                 return this.wasted_amount.toString();
             },
             charge: function() {
