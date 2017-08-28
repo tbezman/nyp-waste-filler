@@ -26,14 +26,23 @@ ipcRenderer.on('clear-and-backup', () => {
 })
 
 ipcRenderer.on('clear', () => {
+	var tableNames = Object.values(sequelize.models).map(it => it.tableName).forEach(it => {
+  		sequelize.query('DELETE FROM ' + it);		
+	});
+
+
 	let exportService = new ExportService();
 	exportService.files().then(files => {
 		files.forEach(file => {
+			try {
 			fs.unlinkSync(file);
+			}catch (e) {
+				console.log(e);
+			}
 		});	
 
-		location.href = "/";
-		location.reload();
+		app.relaunch();
+		app.exit();
 	})	
 });
 
