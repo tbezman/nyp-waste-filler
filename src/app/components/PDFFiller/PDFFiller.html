@@ -46,7 +46,7 @@
                         <td>{{ filler.currentPage().waste_log.units }}</td>
                         <td>NA</td>
                     </tr>
-                    <tr class="selectable" ng-class="{strange: result.units < 0}" ng-repeat="result in filler.results">
+                    <tr class="selectable" ng-class="{strange: filler.isResultStrange(result)}" ng-repeat="result in filler.results">
                         <td>{{ result.dataValues.charge_code_descriptor }}</td>
                         <td>{{ result.dataValues.when | date: 'short' }}</td>
                         <td>{{ result.dataValues.units }}</td>
