@@ -105,7 +105,7 @@ class PDFFillerController {
 
     isResultStrange(result) {
         let isNegative = result.units <= 0;
-        let containsNC = result.dataValues.charge_code_descriptor.indexOf('(Nc)') > -1;
+        let containsNC = result.dataValues.charge_code_descriptor.indexOf('Nc') > -1;
 
         return isNegative || containsNC;
     }

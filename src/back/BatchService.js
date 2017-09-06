@@ -4,8 +4,7 @@ export class BatchService {
     constructor(logs) {
         console.log('in const');
         this.logs = logs.filter(log => {
-            return !!log.waste_log.vial;
-            return log.waste_log.wasted_units > 0;
+            return !!log.waste_log.vial && log.waste_log.wasted_units > 0;
         });
     }
 
