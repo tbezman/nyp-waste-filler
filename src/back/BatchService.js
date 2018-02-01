@@ -37,7 +37,7 @@ export class BatchService {
         line = this.appendSpaces(line, 11);
         line = line + this.padNumberWith(' ', waste.patient_number, 15, true);
         line += "O";
-        line += this.padNumberWith(' ', waste.account_number, 9, true);
+        line += this.padNumberWith(' ', waste.account_number, 8, true);
         line = this.appendSpaces(line, 6);
         line += moment(waste.when).format('MM/DD/YY');
         line += this.padNumber(waste.charge_code, 8);
